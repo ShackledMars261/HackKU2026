@@ -37,14 +37,14 @@ services:
       start_period: 10s
 
   db:
-    image: postgres:latest
+    image: mongo:latest
     env_file:
       - "./envs/.globals.env"
       - "./envs/.db.env"
     ports:
-      - "5432:5432"
+      - "27017:27017"
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data:/data/db
 
 volumes:
   db_data:
