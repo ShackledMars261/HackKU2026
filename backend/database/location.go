@@ -10,11 +10,34 @@ import (
 )
 
 func InsertLocation(location *models.Location) error {
-	collection := client.Database("app").Collection("location")
+	collection := client.Database("app").Collection("locations")
 
 	_, err := collection.InsertOne(context.Background(), location)
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func UpdateLocationRating(id string, newRating float64) error {
+	collection := client.Database("app").Collection("locations")
+
+	filter := bson.D{{"_id", id}}
+
+	update := bson.D{
+		{"$set", bson.D{
+			{"overall_rating", newRating},
+		}},
+	}
+
+	result, err := collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return err
+	}
+
+	if result.MatchedCount == 0 {
+		return errors.ErrLocationNotFound
 	}
 
 	return nil
