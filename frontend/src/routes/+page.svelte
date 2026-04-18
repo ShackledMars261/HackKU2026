@@ -1,24 +1,33 @@
 <svelte:head>
-    <title>ZenQuest</title>
+	<title>SpotDrop</title>
 </svelte:head>
-<div class="w-full h-screen flex justify-center items-center bg-background">
-    <div class="flex flex-col justify-center items-center gap-2 bg-card/70 border border-border rounded-3xl px-16 py-16 text-xs font-medium text-muted-foreground tracking-wide shadow-sm max-w-2xl mx-auto text-center">
-        <div>
-            <h1 class="text-5xl md:text-6xl font-bold text-foreground leading-tight tracking-tight mb-6">
-                Study where it's<br/>
-                <span class="italic text-accent">actually quiet.</span>
-            </h1>
-        </div>
-        <p class="text-lg md:text-xl text-muted-foreground font-light max-w-xl leading-relaxed mb-12">
-            Discover cafés, libraries, and hidden corners near you sorted by how busy they are right now, not just on a good day.
-        </p>
-        <div class="flex flex-col sm:flex-row gap-3 items-center">
-            <a href="#" class="bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium px-7 py-3.5 rounded-full transition-colors shadow-md">
-                Find a quiet spot
-            </a>
-            <a href="#" class="text-muted-foreground hover:text-foreground text-sm font-medium px-5 py-3.5 transition-colors">
-                How it works ↓
-            </a>
-        </div>
-    </div>
+<div class="flex h-screen w-full items-center justify-center bg-background">
+	<div
+		class="mx-auto flex max-w-2xl flex-col items-center justify-center gap-2 rounded-3xl border border-border bg-card/70 px-16 py-16 text-center text-xs font-medium tracking-wide text-muted-foreground shadow-sm"
+	>
+		<div>
+			<h1 class="mb-6 text-5xl leading-tight font-bold tracking-tight text-foreground md:text-6xl">
+				Study where it's<br />
+				<span class="text-accent italic">actually quiet.</span>
+			</h1>
+		</div>
+		<p class="mb-12 max-w-xl text-lg leading-relaxed font-light text-muted-foreground md:text-xl">
+			Discover cafés, libraries, and hidden corners near you sorted by how busy they are right now,
+			not just on a good day.
+		</p>
+		<div class="flex flex-col items-center gap-3 sm:flex-row">
+			<a
+				href="#"
+				class="rounded-full bg-primary px-7 py-3.5 text-sm font-medium text-primary-foreground shadow-md transition-colors hover:bg-primary/90"
+			>
+				Find a quiet spot
+			</a>
+			<a
+				href="#"
+				class="px-5 py-3.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+			>
+				How it works ↓
+			</a>
+		</div>
+	</div>
 </div>
