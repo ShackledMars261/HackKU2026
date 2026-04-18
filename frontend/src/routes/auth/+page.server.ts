@@ -1,4 +1,4 @@
-import type { RegisterRequest, SignInRequest } from '@/requests';
+import type { RegisterRequest, SignInRequest } from '$lib/requests';
 import type { Actions, PageServerLoad } from './$types';
 import { signIn } from '@/api/auth/signin';
 import { redirect } from '@sveltejs/kit';
