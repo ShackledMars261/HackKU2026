@@ -18,7 +18,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     redirect(303, '/login');
   }
 
-  const res = await event.fetch(`${process.env.BACKEND_URL}/auth/session`, {
+  const res = await event.fetch(`${process.env.BACKEND_URL}/session/${sessionToken}`, {
     headers: {
       Authorization: `Bearer ${sessionToken}`
     }
@@ -28,7 +28,15 @@ export const handle: Handle = async ({ event, resolve }) => {
     redirect(303, '/login');
   }
 
-  const user = await res.json();
+  const resp = await res.json();
+
+  const userRes = await event.fetch(`${process.env.BACKEND_URL}/profile/${resp.userId}`, {
+    headers: {
+      Authorization: `Bearer ${sessionToken}`
+    }
+  });
+
+  const user = await userRes.json();
 
   event.locals.user = user;
 
