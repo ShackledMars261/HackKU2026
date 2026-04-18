@@ -7,7 +7,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func RouteUsers(r chi.Router) {
+func UserRouter(r chi.Router) {
 	r.Route("/user", func(r chi.Router) {
 		r.Get("/{id}", getUser)
 	})
