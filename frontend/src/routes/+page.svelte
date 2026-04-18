@@ -1,33 +1,61 @@
+<script>
+	import heroBg from '$lib/assets/hero-bg.svg';
+</script>
+
 <svelte:head>
-	<title>SpotDrop</title>
+    <title>SpotDrop</title>
 </svelte:head>
-<div class="flex h-screen w-full items-center justify-center bg-background">
+
+
+<div class="w-full min-h-screen flex flex-col bg-background overflow-scroll">
+	
+	<!-- HERO -->
 	<div
-		class="mx-auto flex max-w-2xl flex-col items-center justify-center gap-2 rounded-3xl border border-border bg-card/70 px-16 py-16 text-center text-xs font-medium tracking-wide text-muted-foreground shadow-sm"
-	>
-		<div>
-			<h1 class="mb-6 text-5xl leading-tight font-bold tracking-tight text-foreground md:text-6xl">
-				Study where it's<br />
-				<span class="text-accent italic">actually quiet.</span>
+		 style="background-image: url({heroBg}); background-repeat: no-repeat;  background-position: center 70px"
+		class="bg-cover bg-top w-full min-h-screen flex sm:justify-center sm:items-center">
+		<div
+			class="flex flex-col justify-center items-center gap-3
+			w-full h-full
+			bg-card
+			px-6 py-10 text-sm font-medium text-muted-foreground
+			tracking-wide text-center
+
+			sm:max-w-2xl sm:mx-auto sm:h-auto
+			sm:border sm:border-border sm:rounded-3xl
+			sm:px-12 sm:py-12 sm:shadow-sm"
+		>
+			<h1 class="text-5xl md:text-6xl font-bold text-foreground leading-tight tracking-tight mb-6">
+				Study where it's<br/>
+				<span class="italic text-accent">actually quiet.</span>
 			</h1>
-		</div>
-		<p class="mb-12 max-w-xl text-lg leading-relaxed font-light text-muted-foreground md:text-xl">
-			Discover cafés, libraries, and hidden corners near you sorted by how busy they are right now,
-			not just on a good day.
-		</p>
-		<div class="flex flex-col items-center gap-3 sm:flex-row">
-			<a
-				href="#"
-				class="rounded-full bg-primary px-7 py-3.5 text-sm font-medium text-primary-foreground shadow-md transition-colors hover:bg-primary/90"
-			>
-				Find a quiet spot
-			</a>
-			<a
-				href="#"
-				class="px-5 py-3.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-			>
-				How it works ↓
-			</a>
+
+			<p class="text-lg md:text-xl text-muted-foreground font-light max-w-xl leading-relaxed mb-12">
+				Discover cafés, libraries, and hidden corners near you sorted by how busy they are right now, not just on a good day.
+			</p>
+
+			<div class="flex flex-col sm:flex-row gap-3 items-center">
+				<a href="#" class="bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium px-7 py-3.5 rounded-full transition-colors shadow-md">
+					Find a quiet spot
+				</a>
+				<a href="#about" class="text-muted-foreground hover:text-foreground text-sm font-medium px-5 py-3.5 transition-colors">
+					How it works ↓
+				</a>
+			</div>
 		</div>
 	</div>
+
+	<!-- NEXT SECTION -->
+	<div id="about" class="w-full min-h-screen flex justify-center items-center bg-foreground">
+		<div
+			class="flex flex-col justify-center items-center gap-3
+			w-full px-6 py-10 text-sm font-medium text-muted-foreground text-center
+
+			sm:max-w-2xl sm:mx-auto
+			sm:border sm:border-border sm:rounded-3xl
+			sm:px-12 sm:py-12 sm:shadow-sm"
+		>
+			Content here
+		</div>
+	</div>
+
 </div>
