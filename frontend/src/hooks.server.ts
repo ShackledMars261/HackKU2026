@@ -39,6 +39,7 @@ export const handle: Handle = async ({ event, resolve }) => {
   const user = await userRes.json();
 
   event.locals.user = user;
+  event.locals.sessionToken = sessionToken;
 
   return resolve(event);
 };
