@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
-func CreateUser(user *models.User) error {
+func InsertUser(user *models.User) error {
 	collection := client.Database("app").Collection("user")
 
 	if _, err := collection.InsertOne(context.Background(), user); err != nil {

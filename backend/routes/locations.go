@@ -2,84 +2,68 @@ package routes
 
 import (
 	"encoding/json"
-	"log"
-	"main/database"
 	"main/errors"
 	"main/models"
+	"main/service"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
 )
 
-type createLocationRequest struct {
-	Longitude float64
-	Latitude  float64
-	Name      string
-}
-
-type getLocationNearRequest struct {
-	Longitude       float64
-	Latitude        float64
-	MaxDistanceNear float64
-}
-
 func LocationRouter(r chi.Router) {
-	r.Post("/location", createLocation)
-	r.Get("/location/{id}", getLocation)
-	r.Get("/locations/all", getAllLocations)
-	r.Get("/locations/near", getLocationsNear)
+	r.With(RequireSession).Route("/location", func(r chi.Router) {
+		r.Post("/", createLocation)
+		r.Get("/{id}", getLocation)
+	})
+
+	r.With(RequireSession).Get("/locations/all", getAllLocations)
+	r.With(RequireSession).Get("/locations/near", getLocationsNear)
 }
 
 func createLocation(w http.ResponseWriter, r *http.Request) {
-	var request createLocationRequest
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+	var request models.CreateLocationRequest
+	if err := readBody(r, &request); err != nil {
+		writeError(w, err)
 		return
 	}
 
-	new_location := &models.Location{
-		Location: models.GeoJSON{
-			Type:        "Point",
-			Coordinates: []float64{request.Longitude, request.Latitude},
-		},
-		Name: request.Name,
+	session, ok := r.Context().Value("session").(*models.Session)
+	if !ok || session == nil {
+		writeError(w, errors.ErrInvalidSessionID)
+		return
 	}
 
-	created_location, err := database.CreateLocation(new_location)
+	createdLocation, err := service.CreateLocation(session, &request)
 	if err != nil {
-		log.Printf("Error creating location: %v", err)
-		http.Error(w, "Error creating location", http.StatusInternalServerError)
+		writeError(w, err)
+		return
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(created_location)
+	json.NewEncoder(w).Encode(createdLocation)
 }
 
 func getLocation(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	location, err := database.GetLocation(id)
+	location, err := service.GetLocation(id)
 	if err != nil {
-		if errors.Is(err, errors.ErrLocationNotFound) {
-			http.Error(w, "Location not found", http.StatusNotFound)
-		} else {
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		}
+		writeError(w, err)
+		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(location)
+	writeJSON(w, http.StatusOK, location)
 }
 
 func getAllLocations(w http.ResponseWriter, r *http.Request) {
-	locations, err := database.GetAllLocations()
+	locations, err := service.GetAllLocations()
 	if err != nil {
-		http.Error(w, "Error getting locations", http.StatusInternalServerError)
+		writeError(w, err)
+		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(locations)
+	writeJSON(w, http.StatusOK, locations)
 }
 
 func getLocationsNear(w http.ResponseWriter, r *http.Request) {
@@ -88,31 +72,37 @@ func getLocationsNear(w http.ResponseWriter, r *http.Request) {
 	qMax := r.URL.Query().Get("maxDist")
 
 	if qLon == "" || qLat == "" {
-		http.Error(w, "Missing query params", http.StatusBadRequest)
+		writeError(w, errors.ErrInvalidBody)
 		return
 	}
 	if qMax == "" {
-		qMax = "8000" // 8km ~ 5miles
+		qMax = "8000"
 	}
 	maxDist, err := strconv.ParseFloat(qMax, 64)
+	if err != nil {
+		writeError(w, errors.ErrInvalidBody)
+		return
+	}
 	longitude, err := strconv.ParseFloat(qLon, 64)
+	if err != nil {
+		writeError(w, errors.ErrInvalidBody)
+		return
+	}
 	latitude, err := strconv.ParseFloat(qLat, 64)
 	if err != nil {
-		http.Error(w, "Invalid query params", http.StatusBadRequest)
+		writeError(w, errors.ErrInvalidBody)
 		return
 	}
 
-	locations, err := database.GetLocationsNear(longitude, latitude, maxDist)
+	locations, err := service.GetLocationsNear(&models.GetLocationsNearRequest{
+		Longitude:       longitude,
+		Latitude:        latitude,
+		MaxDistanceNear: maxDist,
+	})
 	if err != nil {
-		if errors.Is(err, errors.ErrLocationNotFound) {
-			http.Error(w, "No locations found", http.StatusNotFound)
-			return
-		}
-		http.Error(w, "Error getting locations", http.StatusInternalServerError)
-		log.Printf("Error getting locations near: %v", err)
+		writeError(w, err)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(locations)
+	writeJSON(w, http.StatusOK, locations)
 }

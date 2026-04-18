@@ -29,7 +29,7 @@ func Signup(request *models.SignupRequest) (*models.User, error) {
 		Password: hash,
 	}
 
-	if err := database.CreateUser(user); err != nil {
+	if err := database.InsertUser(user); err != nil {
 		return nil, err
 	}
 
@@ -53,7 +53,7 @@ func Signin(request *models.SigninRequest) (*models.Session, error) {
 
 	session := models.NewSession(user.ID)
 
-	if err := database.CreateSession(session); err != nil {
+	if err := database.InsertSession(session); err != nil {
 		return nil, err
 	}
 
