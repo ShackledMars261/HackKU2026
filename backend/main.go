@@ -20,6 +20,7 @@ func main() {
 
 	r.Get("/health", healthcheck)
 
+	routes.LocationRouter(r)
 	routes.RouteUsers(r)
 	routes.RouteAccount(r)
 
