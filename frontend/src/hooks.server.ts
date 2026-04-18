@@ -1,7 +1,7 @@
 import { redirect } from "@sveltejs/kit";
 import type { Handle } from "@sveltejs/kit";
 
-const PROTECTED_ROUTES = ['/profile'];
+const PROTECTED_ROUTES = ['/location'];
 
 export const handle: Handle = async ({ event, resolve }) => {
     const isProtected = PROTECTED_ROUTES.some(route => 
@@ -15,7 +15,7 @@ export const handle: Handle = async ({ event, resolve }) => {
   const sessionToken = event.cookies.get('session');
 
   if (!sessionToken) {
-    redirect(303, '/login');
+    redirect(303, '/auth');
   }
 
   const res = await event.fetch(`${process.env.BACKEND_URL}/session/${sessionToken}`, {
@@ -25,7 +25,7 @@ export const handle: Handle = async ({ event, resolve }) => {
   });
 
   if (!res.ok) {
-    redirect(303, '/login');
+    redirect(303, '/auth');
   }
 
   const resp = await res.json();
