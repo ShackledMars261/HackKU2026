@@ -29,18 +29,12 @@ export const actions: Actions = {
 		const username: string = data.get('username')?.toString() || '';
 		const password: string = data.get('password')?.toString() || '';
 		const body: RegisterRequest = { username, password };
-		const user = await register(body);
-		if (!user) {
+		const session = await register(body);
+		if (!session) {
 			console.log('error');
 		} else {
-			const loginBody: SignInRequest = { username, password };
-			const session = await signIn(loginBody);
-			if (!session) {
-				console.log('error');
-			} else {
-				cookies.set('session', session.id, { path: '/' });
-				redirect(303, '/');
-			}
+			cookies.set('session', session.id, { path: '/' });
+			redirect(303, '/');
 		}
 	}
 } satisfies Actions;
