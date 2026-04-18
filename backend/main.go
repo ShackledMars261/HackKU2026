@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"main/database"
 	"main/routes"
@@ -21,6 +22,11 @@ func main() {
 
 	routes.RouteUsers(r)
 	routes.RouteAccount(r)
+
+	r.With(RequireSession).Get("/session", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(r.Context().Value("session"))
+	})
 
 	if err := http.ListenAndServe(":8080", r); err != nil {
 		log.Fatal(err)
