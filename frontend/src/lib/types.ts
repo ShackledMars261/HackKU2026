@@ -1,6 +1,6 @@
 export type User = {
   id: string;
-  email: string;
+  username: string;
   password: string;
 };
 
@@ -18,4 +18,10 @@ export type Post = {
     rating: number;
     description: string;
     photoFileIds: string[];
+}
+
+export type Session = {
+    id: string;
+    userId: string;
+    expiresAt: string;
 }
