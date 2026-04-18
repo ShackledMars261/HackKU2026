@@ -34,14 +34,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	const resp = await res.json();
 
-	const userRes = await event.fetch(
-		`http://${process.env.BACKEND_URL}:8080/profile/${resp.userId}`,
-		{
-			headers: {
-				Authorization: `Bearer ${sessionToken}`
-			}
+	const userRes = await event.fetch(`http://${process.env.BACKEND_URL}:8080/user/${resp.userId}`, {
+		headers: {
+			Authorization: `Bearer ${sessionToken}`
 		}
-	);
+	});
 
 	const user = await userRes.json();
 
