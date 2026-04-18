@@ -28,7 +28,7 @@ func GetPost(id string) (*models.Post, error) {
 	var model models.Post
 	if err := collection.FindOne(context.Background(), bson.D{{"_id", id}}).Decode(&model); err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, errors.Join(err, errors.ErrPostNotFound)
+			return nil, errors.ErrPostNotFound
 		}
 
 		return nil, err
