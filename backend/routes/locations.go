@@ -61,7 +61,7 @@ func getLocation(w http.ResponseWriter, r *http.Request) {
 
 	location, err := database.GetLocation(id)
 	if err != nil {
-		if errors.Is(err, errors.ErrNotFound) {
+		if errors.Is(err, errors.ErrLocationNotFound) {
 			http.Error(w, "Location not found", http.StatusNotFound)
 		} else {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -104,7 +104,7 @@ func getLocationsNear(w http.ResponseWriter, r *http.Request) {
 
 	locations, err := database.GetLocationsNear(longitude, latitude, maxDist)
 	if err != nil {
-		if errors.Is(err, errors.ErrNotFound) {
+		if errors.Is(err, errors.ErrLocationNotFound) {
 			http.Error(w, "No locations found", http.StatusNotFound)
 			return
 		}

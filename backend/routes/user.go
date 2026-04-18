@@ -1,9 +1,7 @@
 package routes
 
 import (
-	"encoding/json"
 	"main/database"
-	"main/errors"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -20,14 +18,9 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 
 	user, err := database.GetUser(id)
 	if err != nil {
-		if errors.Is(err, errors.ErrUserNotFound) {
-			http.Error(w, "user not found", http.StatusNotFound)
-		} else {
-			http.Error(w, "an unknown error occured", http.StatusInternalServerError)
-		}
+		writeError(w, err)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(user)
+	writeJSON(w, http.StatusOK, user)
 }
