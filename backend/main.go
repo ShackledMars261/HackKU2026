@@ -24,7 +24,7 @@ func main() {
 	routes.RouteUsers(r)
 	routes.RouteAccount(r)
 
-	r.With(RequireSession).Get("/session", func(w http.ResponseWriter, r *http.Request) {
+	r.With(routes.RequireSession).Get("/session", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(r.Context().Value("session"))
 	})

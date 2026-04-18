@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
-func CreateSession(session *models.Session) error {
+func InsertSession(session *models.Session) error {
 	collection := client.Database("app").Collection("session")
 
 	if _, err := collection.InsertOne(context.Background(), session); err != nil {
