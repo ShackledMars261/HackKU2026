@@ -1,45 +1,49 @@
-import { redirect } from "@sveltejs/kit";
-import type { Handle } from "@sveltejs/kit";
+import { redirect } from '@sveltejs/kit';
+import type { Handle } from '@sveltejs/kit';
 
-const PROTECTED_ROUTES = ['/profile'];
+const PROTECTED_ROUTES = ['/location'];
 
 export const handle: Handle = async ({ event, resolve }) => {
-    const isProtected = PROTECTED_ROUTES.some(route => 
-    event.url.pathname.startsWith(route)
-  );
+	const isProtected = PROTECTED_ROUTES.some((route) => event.url.pathname.startsWith(route));
 
-  if (!isProtected) {
-    return resolve(event);
-  }
+	if (event.cookies.get('session')) {
+		event.locals.isSignedIn = true;
+	} else {
+		event.locals.isSignedIn = false;
+	}
 
-  const sessionToken = event.cookies.get('session');
+	if (!isProtected) {
+		return resolve(event);
+	}
 
-  if (!sessionToken) {
-    redirect(303, '/login');
-  }
+	const sessionToken = event.cookies.get('session');
 
-  const res = await event.fetch(`${process.env.BACKEND_URL}/session/${sessionToken}`, {
-    headers: {
-      Authorization: `Bearer ${sessionToken}`
-    }
-  });
+	if (!sessionToken) {
+		redirect(303, '/auth');
+	}
 
-  if (!res.ok) {
-    redirect(303, '/login');
-  }
+	const res = await event.fetch(`${process.env.BACKEND_URL}/session/${sessionToken}`, {
+		headers: {
+			Authorization: `Bearer ${sessionToken}`
+		}
+	});
 
-  const resp = await res.json();
+	if (!res.ok) {
+		redirect(303, '/auth');
+	}
 
-  const userRes = await event.fetch(`${process.env.BACKEND_URL}/profile/${resp.userId}`, {
-    headers: {
-      Authorization: `Bearer ${sessionToken}`
-    }
-  });
+	const resp = await res.json();
 
-  const user = await userRes.json();
+	const userRes = await event.fetch(`${process.env.BACKEND_URL}/profile/${resp.userId}`, {
+		headers: {
+			Authorization: `Bearer ${sessionToken}`
+		}
+	});
 
-  event.locals.user = user;
-  event.locals.sessionToken = sessionToken;
+	const user = await userRes.json();
 
-  return resolve(event);
+	event.locals.user = user;
+	event.locals.sessionToken = sessionToken;
+
+	return resolve(event);
 };

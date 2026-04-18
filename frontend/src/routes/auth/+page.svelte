@@ -70,21 +70,22 @@
 							</Card.Description>
 						</Card.Header>
 						<Card.Content class="grid gap-6">
-							<div class="grid gap-3">
-								<Label for="tabs-signup-username" class="text-sm sm:text-base md:text-lg">Username</Label>
+							<div class="grid gap-3">		
+								<Label for="signup-username" class="text-sm sm:text-base md:text-lg">Username</Label>
 								<Input
 									name="username"
-									id="tabs-signup-username"
+									id="signup-username"
 									placeholder="Username"
 									class="text-sm sm:text-base md:text-lg h-9 sm:h-10 md:h-11"
 									value={username}
 								/>
 							</div>
 							<div class="grid gap-3">
-								<Label for="tabs-signup-password" class="text-sm sm:text-base md:text-lg">Password</Label>
+									
+								<Label for="signup-password" class="text-sm sm:text-base md:text-lg">Password</Label>
 								<Input
 									name="password"
-									id="tabs-signup-password"
+									id="signup-password"
 									placeholder="Password"
 									class="text-sm sm:text-base md:text-lg h-9 sm:h-10 md:h-11"
 									value={password}

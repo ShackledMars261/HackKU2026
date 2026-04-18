@@ -21,6 +21,7 @@ func main() {
 	r.Get("/health", healthcheck)
 
 	routes.LocationRouter(r)
+	routes.RoutePosts(r)
 	routes.RouteUsers(r)
 	routes.RouteAccount(r)
 

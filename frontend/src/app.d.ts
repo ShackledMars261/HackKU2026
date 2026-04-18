@@ -5,6 +5,7 @@ declare global {
 		interface Locals {
 			user: User | null;
 			sessionToken: string | null;
+			isSignedIn: boolean | null;
 		}
 		// interface Error {}
 		// interface PageData {}
