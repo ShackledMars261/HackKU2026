@@ -1,6 +1,7 @@
-import { redirect, type Actions } from '@sveltejs/kit';
+import { type Actions } from '@sveltejs/kit';
 import type { CreateLocationRequest } from '@/requests';
-import { createLocation } from '@/api/location/createLocation';
+import { createLocation } from '$lib/api/location/createLocation';
+import { createPost } from '@/api/post/createPost';
 
 export const actions: Actions = {
 	submitLocation: async ({ cookies, request }) => {
@@ -15,7 +16,16 @@ export const actions: Actions = {
 			console.log('error');
 		} else {
 			console.log(JSON.stringify(location));
-			redirect(303, '/');
+		}
+	},
+	submitPost: async ({ cookies, request }) => {
+		const data = await request.formData();
+		const token: string = cookies.get('session') || '';
+		const post = await createPost(token, data);
+		if (!post) {
+			console.log('error');
+		} else {
+			console.log(JSON.stringify(post));
 		}
 	}
 };

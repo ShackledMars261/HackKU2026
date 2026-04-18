@@ -9,9 +9,20 @@
 <Geolocation getPosition bind:coords />
 
 <form method="POST" action="?/submitLocation" use:enhance>
-	<input id="longitude" name="latitude" type="number" step="any" value={longitude} />
-	<input id="latitude" name="latitude" type="number" step="any" value={latitude} />
+	<input id="longitude" name="latitude" type="number" step="any" value={longitude} /><br />
+	<input id="latitude" name="latitude" type="number" step="any" value={latitude} /><br />
 	<label for="name">Location name:</label>
-	<input id="name" name="name" type="text" />
-	<button type="submit">Submit</button>
+	<input id="name" name="name" type="text" /><br />
+	<button type="submit">Submit</button><br />
+</form>
+<hr />
+<br />
+<form method="POST" action="?/submitPost" enctype="multipart/form-data">
+	<br />
+	<label for="location_id">Location id:</label>
+	<input id="location_id" name="location_id" type="text" /><br />
+	<label for="description">Description:</label>
+	<input id="description" name="description" type="text" /><br />
+	<input type="file" name="photo" accept="image/*" /><br />
+	<button type="submit">Upload</button><br />
 </form>

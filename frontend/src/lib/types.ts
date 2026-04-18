@@ -18,10 +18,12 @@ export type Location = {
 };
 
 export type Post = {
+	id: string;
 	userId: string;
 	locationId: string;
 	rating: number;
 	description: string;
+	createdAt: string;
 	photoFileIds: string[];
 };
 
