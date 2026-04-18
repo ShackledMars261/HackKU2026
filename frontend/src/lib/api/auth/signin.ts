@@ -3,7 +3,7 @@ import type { Session } from '@/types';
 
 export async function signIn(body: SignInRequest): Promise<Session | void> {
 	try {
-		const resp = await fetch(`http://${process.env.BACKEND_URL}/signin`, {
+		const resp = await fetch(`http://${process.env.BACKEND_URL}:8080/signin`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
