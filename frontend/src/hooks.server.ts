@@ -22,7 +22,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		redirect(303, '/auth');
 	}
 
-	const res = await event.fetch(`${process.env.BACKEND_URL}/session/${sessionToken}`, {
+	const res = await event.fetch(`http://${process.env.BACKEND_URL}/session/${sessionToken}`, {
 		headers: {
 			Authorization: `Bearer ${sessionToken}`
 		}
@@ -34,7 +34,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	const resp = await res.json();
 
-	const userRes = await event.fetch(`${process.env.BACKEND_URL}/profile/${resp.userId}`, {
+	const userRes = await event.fetch(`http://${process.env.BACKEND_URL}/profile/${resp.userId}`, {
 		headers: {
 			Authorization: `Bearer ${sessionToken}`
 		}
