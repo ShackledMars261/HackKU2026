@@ -7,6 +7,6 @@
 </svelte:head>
 
 {#if data.user}
-	<p>{data.user.email}</p>
+	<p>{data.user.username}</p>
 	<!-- THIS IS FOR TESTING!! NEED TO MAKE A REAL USER PAGE -->
 {/if}

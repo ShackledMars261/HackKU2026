@@ -3,18 +3,45 @@
 	import { navigationMenuTriggerStyle } from '$lib/components/ui/navigation-menu/navigation-menu-trigger.svelte';
 	import { IsMobile } from '$lib/hooks/is-mobile.svelte';
 	import { resolve } from '$app/paths';
+	import logo from '$lib/assets/logo.svg';
 
 	const isMobile = new IsMobile();
+
+	type Props = {
+		isSignedIn: boolean;
+	};
+
+	let { isSignedIn }: Props = $props();
 </script>
 
-<NavigationMenu.Root viewport={isMobile.current}>
-	<NavigationMenu.List class="flex-wrap">
-		<NavigationMenu.Item>
-			<NavigationMenu.Link>
-				{#snippet child()}
-					<a href={resolve('/')} class={navigationMenuTriggerStyle()}>Home</a>
-				{/snippet}
-			</NavigationMenu.Link>
-		</NavigationMenu.Item>
-	</NavigationMenu.List>
-</NavigationMenu.Root>
+<div class="flex w-full items-center justify-between text-foreground">
+	<NavigationMenu.Root viewport={isMobile.current} class="w-max max-w-max">
+		<NavigationMenu.List>
+			<NavigationMenu.Item>
+				<NavigationMenu.Link>
+					{#snippet child()}
+						<a href={resolve('/')} class={navigationMenuTriggerStyle()} aria-label="Home">
+							<img src={logo} alt="Home" class="w-30" />
+						</a>
+					{/snippet}
+				</NavigationMenu.Link>
+			</NavigationMenu.Item>
+		</NavigationMenu.List>
+	</NavigationMenu.Root>
+
+	<NavigationMenu.Root viewport={isMobile.current} class="w-max max-w-max">
+		<NavigationMenu.List>
+			{#if !isSignedIn}
+				<NavigationMenu.Item>
+					<NavigationMenu.Link>
+						{#snippet child()}
+							<a href={resolve('/auth')} class={navigationMenuTriggerStyle()} aria-label="Login">
+								Login
+							</a>
+						{/snippet}
+					</NavigationMenu.Link>
+				</NavigationMenu.Item>
+			{/if}
+		</NavigationMenu.List>
+	</NavigationMenu.Root>
+</div>

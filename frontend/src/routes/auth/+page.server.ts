@@ -1,8 +1,8 @@
 import type { RegisterRequest, SignInRequest } from '$lib/requests';
 import type { Actions, PageServerLoad } from './$types';
-import { signIn } from '@/api/auth/signin';
+import { signIn } from '$lib/api/auth/signin';
 import { redirect } from '@sveltejs/kit';
-import { register } from '@/api/auth/register';
+import { register } from '$lib/api/auth/register';
 
 export const load: PageServerLoad = async ({ cookies }) => {
 	if (cookies.get('session')) {
