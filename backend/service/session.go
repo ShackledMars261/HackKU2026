@@ -4,12 +4,13 @@ import (
 	"main/database"
 	"main/errors"
 	"main/models"
+	"time"
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func Signup(request *models.SignupRequest) (*models.User, error) {
+func Signup(request *models.SignupRequest) (*models.Session, error) {
 	if _, err := database.GetUserByUsername(request.Username); err != nil {
 		if !errors.Is(err, errors.ErrUserNotFound) {
 			return nil, err
@@ -33,7 +34,12 @@ func Signup(request *models.SignupRequest) (*models.User, error) {
 		return nil, err
 	}
 
-	return user, nil
+	session, err := CreateSession(user)
+	if err != nil {
+		return nil, err
+	}
+
+	return session, nil
 }
 
 func Signin(request *models.SigninRequest) (*models.Session, error) {
@@ -47,11 +53,38 @@ func Signin(request *models.SigninRequest) (*models.Session, error) {
 	}
 
 	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(request.Password)); err != nil {
-		// Return generic error to prevent password timing attacks
 		return nil, errors.ErrInvalidUsernameOrPassword
 	}
 
-	session := models.NewSession(user.ID)
+	session, err := CreateSession(user)
+	if err != nil {
+		return nil, err
+	}
+
+	return session, nil
+}
+
+func GetSessionStatus(id string) (*models.SessionStatusResponse, error) {
+	session, err := database.GetSession(id)
+	if err != nil {
+		if errors.Is(err, errors.ErrSessionNotFound) {
+			return &models.SessionStatusResponse{}, nil
+		}
+	}
+
+	return &models.SessionStatusResponse{
+		Exists:  true,
+		Expired: time.Now().After(session.ExpiresAt),
+		UserID:  session.UserID,
+	}, nil
+}
+
+func CreateSession(user *models.User) (*models.Session, error) {
+	session := &models.Session{
+		ID:        uuid.NewString(),
+		UserID:    user.ID,
+		ExpiresAt: time.Now().Add(time.Hour),
+	}
 
 	if err := database.InsertSession(session); err != nil {
 		return nil, err
