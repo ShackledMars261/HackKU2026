@@ -5,33 +5,21 @@ import (
 	"io"
 	"main/errors"
 	"main/models"
-	"time"
 
-	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
-func CreatePost(post *models.Post) (*models.Post, error) {
+func CreatePost(post *models.Post) error {
 	collection := client.Database("app").Collection("posts")
 
-	model := &models.Post{
-		ID:           uuid.NewString(),
-		UserId:       post.UserId,
-		LocationId:   post.LocationId,
-		Rating:       post.Rating,
-		Description:  post.Description,
-		CreatedAt:    time.Now(),
-		PhotoFileIds: post.PhotoFileIds,
-	}
-
-	_, err := collection.InsertOne(context.Background(), model)
+	_, err := collection.InsertOne(context.Background(), post)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return model, nil
+	return nil
 }
 
 func GetPost(id string) (*models.Post, error) {
@@ -40,7 +28,7 @@ func GetPost(id string) (*models.Post, error) {
 	var model models.Post
 	if err := collection.FindOne(context.Background(), bson.D{{"_id", id}}).Decode(&model); err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, errors.Join(err, errors.ErrNotFound)
+			return nil, errors.Join(err, errors.ErrPostNotFound)
 		}
 
 		return nil, err

@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
-func CreateUser(user *models.User) error {
+func InsertUser(user *models.User) error {
 	collection := client.Database("app").Collection("user")
 
 	if _, err := collection.InsertOne(context.Background(), user); err != nil {
@@ -25,7 +25,7 @@ func GetUser(id string) (*models.User, error) {
 	var model models.User
 	if err := collection.FindOne(context.Background(), bson.D{{"_id", id}}).Decode(&model); err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, errors.Join(err, errors.ErrUserNotFound)
+			return nil, errors.ErrUserNotFound
 		}
 
 		return nil, err
@@ -40,7 +40,7 @@ func GetUserByUsername(username string) (*models.User, error) {
 	var model models.User
 	if err := collection.FindOne(context.Background(), bson.D{{"username", username}}).Decode(&model); err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, errors.Join(err, errors.ErrUserNotFound)
+			return nil, errors.ErrUserNotFound
 		}
 
 		return nil, err

@@ -11,3 +11,10 @@ type Post struct {
 	CreatedAt    time.Time `bson:"created_at" json:"created_at"`
 	PhotoFileIds []string  `bson:"photo_file_ids" json:"photo_file_ids"`
 }
+
+type CreatePostRequest struct {
+	LocationId   string
+	Rating       float64
+	Description  string
+	PhotoFileIds []string
+}

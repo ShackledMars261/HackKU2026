@@ -29,7 +29,7 @@ func Signup(request *models.SignupRequest) (*models.User, error) {
 		Password: hash,
 	}
 
-	if err := database.CreateUser(user); err != nil {
+	if err := database.InsertUser(user); err != nil {
 		return nil, err
 	}
 
@@ -39,16 +39,21 @@ func Signup(request *models.SignupRequest) (*models.User, error) {
 func Signin(request *models.SigninRequest) (*models.Session, error) {
 	user, err := database.GetUserByUsername(request.Username)
 	if err != nil {
-		return nil, errors.Join(err, errors.ErrInvalidUsernameOrPassword)
+		if errors.Is(err, errors.ErrUserNotFound) {
+			return nil, errors.ErrInvalidUsernameOrPassword
+		}
+
+		return nil, err
 	}
 
 	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(request.Password)); err != nil {
-		return nil, errors.Join(err, errors.ErrInvalidUsernameOrPassword)
+		// Return generic error to prevent password timing attacks
+		return nil, errors.ErrInvalidUsernameOrPassword
 	}
 
 	session := models.NewSession(user.ID)
 
-	if err := database.CreateSession(session); err != nil {
+	if err := database.InsertSession(session); err != nil {
 		return nil, err
 	}
 

@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
-func CreateSession(session *models.Session) error {
+func InsertSession(session *models.Session) error {
 	collection := client.Database("app").Collection("session")
 
 	if _, err := collection.InsertOne(context.Background(), session); err != nil {
@@ -25,7 +25,7 @@ func GetSession(id string) (*models.Session, error) {
 	var session models.Session
 	if err := collection.FindOne(context.Background(), bson.D{{"_id", id}}).Decode(&session); err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, errors.Join(err, errors.ErrSessionNotFound)
+			return nil, errors.ErrSessionNotFound
 		}
 
 		return nil, err
