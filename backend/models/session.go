@@ -23,8 +23,17 @@ func NewSession(userId string) *Session {
 }
 
 type SessionStatusResponse struct {
-	Exists    bool       `json:"exists"`
-	Expired   bool       `json:"expired"`
-	ExpiresAt *time.Time `json:"expiresAt"`
-	UserID    *string    `json:"userId"`
+	Exists  bool   `json:"exists"`
+	Expired bool   `json:"expired"`
+	UserID  string `json:"userId"`
+}
+
+type SignupRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type SigninRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
 }

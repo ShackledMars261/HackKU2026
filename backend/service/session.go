@@ -48,7 +48,6 @@ func Signin(request *models.SigninRequest) (*models.Session, error) {
 	}
 
 	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(request.Password)); err != nil {
-		// Return generic error to prevent password timing attacks
 		return nil, errors.ErrInvalidUsernameOrPassword
 	}
 
@@ -64,13 +63,14 @@ func Signin(request *models.SigninRequest) (*models.Session, error) {
 func GetSessionStatus(id string) (*models.SessionStatusResponse, error) {
 	session, err := database.GetSession(id)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, errors.ErrSessionNotFound) {
+			return &models.SessionStatusResponse{}, nil
+		}
 	}
-	status := models.SessionStatusResponse{
-		Exists:    true,
-		Expired:   time.Now().After(session.ExpiresAt),
-		ExpiresAt: &session.ExpiresAt,
-		UserID:    &session.UserID,
-	}
-	return &status, nil
+
+	return &models.SessionStatusResponse{
+		Exists:  true,
+		Expired: time.Now().After(session.ExpiresAt),
+		UserID:  session.UserID,
+	}, nil
 }
