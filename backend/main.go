@@ -1,6 +1,9 @@
 package main
 
 import (
+	"log"
+	"main/database"
+	"main/handlers"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -8,20 +11,19 @@ import (
 )
 
 func main() {
+	database.Initialize()
+
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
 	r.Get("/health", healthcheck)
 
-	r.Route("/user", func(r chi.Router) {
-		r.Post("/", healthcheck)
-		r.Get("/{userId}", healthcheck)
-		r.Put("/{userId}", healthcheck)
-		r.Delete("/{userId}", healthcheck)
-	})
+	r.Route("/user", handlers.UserRouter)
 
-	http.ListenAndServe(":8080", r)
+	if err := http.ListenAndServe(":8080", r); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func healthcheck(w http.ResponseWriter, r *http.Request) {
