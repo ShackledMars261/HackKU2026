@@ -31,6 +31,15 @@
 
 	<NavigationMenu.Root viewport={isMobile.current} class="w-max max-w-max">
 		<NavigationMenu.List>
+		<NavigationMenu.Item>
+					<NavigationMenu.Link>
+						{#snippet child()}
+							<a href={resolve('/dashboard')} class={navigationMenuTriggerStyle()} aria-label="Dashboard">
+								Dashboard
+							</a>
+						{/snippet}
+					</NavigationMenu.Link>
+				</NavigationMenu.Item>
 			{#if !isSignedIn}
 				<NavigationMenu.Item>
 					<NavigationMenu.Link>
