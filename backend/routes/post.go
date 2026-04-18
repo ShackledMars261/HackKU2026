@@ -25,12 +25,13 @@ func createPost(w http.ResponseWriter, r *http.Request) {
 
 	session, ok := r.Context().Value("session").(*models.Session)
 	if !ok {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		writeError(w, errors.ErrUnauthorized)
+		return
 	}
 
 	err := r.ParseMultipartForm(10 << 20)
 	if err != nil && err != http.ErrNotMultipart {
-		http.Error(w, "Unable to parse form data", http.StatusBadRequest)
+		writeError(w, errors.ErrBadFormData)
 		return
 	}
 
@@ -39,7 +40,7 @@ func createPost(w http.ResponseWriter, r *http.Request) {
 
 	rating, err := strconv.ParseFloat(r.FormValue("rating"), 64)
 	if err != nil {
-		http.Error(w, "Invalid rating format", http.StatusBadRequest)
+		writeError(w, errors.ErrBadRatingFormat)
 		return
 	}
 
@@ -51,7 +52,8 @@ func createPost(w http.ResponseWriter, r *http.Request) {
 		for _, fileHeader := range files {
 			file, err := fileHeader.Open()
 			if err != nil {
-				http.Error(w, "Failed to read uploaded file", http.StatusInternalServerError)
+				writeError(w, errors.ErrInternalServerError)
+				log.Printf("Error reading uploaded file: %v", err)
 				return
 			}
 
@@ -59,8 +61,8 @@ func createPost(w http.ResponseWriter, r *http.Request) {
 			file.Close()
 
 			if err != nil {
+				writeError(w, errors.ErrInternalServerError)
 				log.Printf("GridFS upload error: %v", err)
-				http.Error(w, "Error saving photo to database", http.StatusInternalServerError)
 				return
 			}
 
@@ -78,7 +80,7 @@ func createPost(w http.ResponseWriter, r *http.Request) {
 	created_post, err := service.CreatePost(session, postRequest)
 	if err != nil {
 		log.Printf("Error creating post: %v", err)
-		http.Error(w, "Error creating post", http.StatusInternalServerError)
+		writeError(w, errors.ErrInternalServerError)
 		return
 	}
 
@@ -92,10 +94,11 @@ func getPost(w http.ResponseWriter, r *http.Request) {
 	post, err := service.GetPost(id)
 	if err != nil {
 		if errors.Is(err, errors.ErrPostNotFound) {
-			http.Error(w, "Post not found", http.StatusNotFound)
+			writeError(w, errors.ErrPostNotFound)
 			return
 		} else {
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			log.Printf("Error getting post: %v", err)
+			writeError(w, errors.ErrInternalServerError)
 			return
 		}
 	}
@@ -107,7 +110,7 @@ func getPost(w http.ResponseWriter, r *http.Request) {
 func getPhoto(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "photoId")
 	if id == "" {
-		http.Error(w, "Invalid photo ID", http.StatusBadRequest)
+		writeError(w, errors.ErrMissingParam)
 		return
 	}
 
@@ -115,7 +118,7 @@ func getPhoto(w http.ResponseWriter, r *http.Request) {
 
 	err := service.StreamPhotoFromGridFS(id, w)
 	if err != nil {
-		http.Error(w, "Photo not found", http.StatusNotFound)
+		writeError(w, errors.ErrPhotoNotFound)
 		return
 	}
 }
@@ -125,14 +128,14 @@ func getPostsByLocation(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Getting posts by location: %v", locationId)
 
 	if locationId == "" {
-		http.Error(w, "Invalid location ID", http.StatusBadRequest)
+		writeError(w, errors.ErrMissingParam)
 		return
 	}
 
 	posts, err := service.GetPostsForLocation(locationId)
 	if err != nil {
 		log.Printf("Error getting posts for location %s: %v", locationId, err)
-		http.Error(w, "Error getting posts", http.StatusInternalServerError)
+		writeError(w, errors.ErrInternalServerError)
 		return
 	}
 
