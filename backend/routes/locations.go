@@ -1,12 +1,9 @@
 package routes
 
 import (
-	"encoding/json"
-	"main/errors"
 	"main/models"
 	"main/service"
 	"net/http"
-	"strconv"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -17,8 +14,8 @@ func LocationRouter(r chi.Router) {
 		r.Get("/{id}", getLocation)
 	})
 
-	r.With(RequireSession).Get("/locations/all", getAllLocations)
-	r.With(RequireSession).Get("/locations/near", getLocationsNear)
+	r.With(RequireSession).Get("/location/all", getAllLocations)
+	r.With(RequireSession).Get("/location/nearby", getNearbyLocations)
 }
 
 func createLocation(w http.ResponseWriter, r *http.Request) {
@@ -28,20 +25,16 @@ func createLocation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session, ok := r.Context().Value("session").(*models.Session)
-	if !ok || session == nil {
-		writeError(w, errors.ErrInvalidSessionID)
-		return
-	}
+	// session will always be valid if RequireSession is used
+	session, _ := r.Context().Value("session").(*models.Session)
 
-	createdLocation, err := service.CreateLocation(session, &request)
+	location, err := service.CreateLocation(session, &request)
 	if err != nil {
 		writeError(w, err)
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(createdLocation)
+	writeJSON(w, http.StatusCreated, location)
 }
 
 func getLocation(w http.ResponseWriter, r *http.Request) {
@@ -66,39 +59,14 @@ func getAllLocations(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, locations)
 }
 
-func getLocationsNear(w http.ResponseWriter, r *http.Request) {
-	qLon := r.URL.Query().Get("longitude")
-	qLat := r.URL.Query().Get("latitude")
-	qMax := r.URL.Query().Get("maxDist")
-
-	if qLon == "" || qLat == "" {
-		writeError(w, errors.ErrInvalidBody)
-		return
-	}
-	if qMax == "" {
-		qMax = "8000"
-	}
-	maxDist, err := strconv.ParseFloat(qMax, 64)
-	if err != nil {
-		writeError(w, errors.ErrInvalidBody)
-		return
-	}
-	longitude, err := strconv.ParseFloat(qLon, 64)
-	if err != nil {
-		writeError(w, errors.ErrInvalidBody)
-		return
-	}
-	latitude, err := strconv.ParseFloat(qLat, 64)
-	if err != nil {
-		writeError(w, errors.ErrInvalidBody)
+func getNearbyLocations(w http.ResponseWriter, r *http.Request) {
+	var request models.GetLocationsNearRequest
+	if err := readBody(r, &request); err != nil {
+		writeError(w, err)
 		return
 	}
 
-	locations, err := service.GetLocationsNear(&models.GetLocationsNearRequest{
-		Longitude:       longitude,
-		Latitude:        latitude,
-		MaxDistanceNear: maxDist,
-	})
+	locations, err := service.GetNearbyLocations(&request)
 	if err != nil {
 		writeError(w, err)
 		return
