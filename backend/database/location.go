@@ -10,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
-func CreateLocation(location *models.Location) *models.Location {
+func CreateLocation(location *models.Location) (*models.Location, error) {
 	collection := client.Database("app").Collection("locations")
 
 	model := &models.Location{
@@ -20,9 +20,12 @@ func CreateLocation(location *models.Location) *models.Location {
 		OverallRating: 0.0,
 	}
 
-	collection.InsertOne(context.Background(), model)
+	_, err := collection.InsertOne(context.Background(), model)
+	if err != nil {
+		return nil, err
+	}
 
-	return model
+	return model, nil
 }
 
 func GetLocation(id string) (*models.Location, error) {
