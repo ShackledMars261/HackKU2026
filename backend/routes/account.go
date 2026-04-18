@@ -11,6 +11,7 @@ import (
 func RouteAccount(r chi.Router) {
 	r.Post("/signup", signup)
 	r.Post("/signin", signin)
+	r.Get("/session/{id}", session)
 }
 
 func signup(w http.ResponseWriter, r *http.Request) {
@@ -43,4 +44,8 @@ func signin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusOK, session)
+}
+
+func session(w http.ResponseWriter, r *http.Request) {
+
 }

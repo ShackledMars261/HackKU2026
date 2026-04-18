@@ -21,3 +21,10 @@ func NewSession(userId string) *Session {
 		ExpiresAt: time.Now().Add(timeout),
 	}
 }
+
+type SessionStatusResponse struct {
+	Exists    bool       `json:"exists"`
+	Expired   *bool      `json:"expired"`
+	ExpiresAt *time.Time `json:"expiresAt"`
+	UserID    *string    `json:"userId"`
+}
