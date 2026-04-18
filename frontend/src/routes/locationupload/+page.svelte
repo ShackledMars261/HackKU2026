@@ -23,6 +23,8 @@
 	<input id="location_id" name="location_id" type="text" /><br />
 	<label for="description">Description:</label>
 	<input id="description" name="description" type="text" /><br />
-	<input type="file" name="photo" accept="image/*" /><br />
+	<label for="rating">Rating:</label>
+	<input id="rating" name="rating" type="text" /><br />
+	<input type="file" name="photos" accept="image/*" /><br />
 	<button type="submit">Upload</button><br />
 </form>

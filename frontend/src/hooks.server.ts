@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import type { Handle } from '@sveltejs/kit';
 
-const PROTECTED_ROUTES = ['/location'];
+const PROTECTED_ROUTES = ['/location', '/dashboard'];
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const isProtected = PROTECTED_ROUTES.some((route) => event.url.pathname.startsWith(route));
