@@ -7,12 +7,14 @@ import (
 	"github.com/google/uuid"
 )
 
-func CreateSession(userId uuid.UUID) (*models.Session, error) {
+func CreateSession(session *models.Session) error {
 	collection := client.Database("app").Collection("session")
-	model := models.NewSession(userId)
 
-	collection.InsertOne(context.Background(), model)
-	return nil, nil
+	if _, err := collection.InsertOne(context.Background(), session); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func GetSession(sessionId uuid.UUID) (*models.Session, error) {

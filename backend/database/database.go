@@ -11,6 +11,13 @@ var client *mongo.Client
 
 func Initialize() {
 	uri := os.Getenv("MONGODB_URI")
+	if uri == "" {
+		panic("MONGODB_URI is not set")
+	}
 
-	client, _ = mongo.Connect(options.Client().ApplyURI(uri))
+	var err error
+	client, err = mongo.Connect(options.Client().ApplyURI(uri))
+	if err != nil {
+		panic(err)
+	}
 }
