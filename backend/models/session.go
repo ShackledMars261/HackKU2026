@@ -9,15 +9,15 @@ import (
 var timeout, _ = time.ParseDuration("2m")
 
 type Session struct {
-	SessionId string `bson:"_id" json:"id"`
-	UserId    string `bson:"userId", json:"userId"`
-	ExpiresAt time.Time
+	ID        string    `bson:"_id" json:"id"`
+	UserId    string    `bson:"user_id" json:"user_id"`
+	ExpiresAt time.Time `bson:"expires_at" json:"expires_at"`
 }
 
-func NewSession(userId uuid.UUID) *Session {
+func NewSession(userId string) *Session {
 	return &Session{
-		SessionId: uuid.NewString(),
-		UserId:    userId.String(),
+		ID:        uuid.NewString(),
+		UserId:    userId,
 		ExpiresAt: time.Now().Add(timeout),
 	}
 }

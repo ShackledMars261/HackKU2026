@@ -13,7 +13,10 @@ func RequireSession() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			cookie, err := r.Cookie("session_id")
-			sessionId, err := uuid.Parse(cookie.Value)
+
+			sessionId := cookie.Value
+			//verify valid uuid
+			_, err = uuid.Parse(sessionId)
 
 			if err != nil {
 				http.Error(w, "Unauthorized", http.StatusUnauthorized)
