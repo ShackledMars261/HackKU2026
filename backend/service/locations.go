@@ -12,13 +12,15 @@ func CreateLocation(session *models.Session, request *models.CreateLocationReque
 		ID: uuid.NewString(),
 		Location: models.GeoJSON{
 			Type:        "Point",
-			Coordinates: []float64{request.Longitude, request.Latitude},
+			Coordinates: []float32{request.Longitude, request.Latitude},
 		},
 		Name:  request.Name,
 		Owner: session.UserID,
 	}
 
-	database.InsertLocation(location)
+	if err := database.InsertLocation(location); err != nil {
+		return nil, err
+	}
 
 	return location, nil
 }
@@ -27,10 +29,10 @@ func GetLocation(id string) (*models.Location, error) {
 	return database.GetLocation(id)
 }
 
-func GetAllLocations() ([]*models.Location, error) {
+func GetAllLocations() ([]models.Location, error) {
 	return database.GetAllLocations()
 }
 
-func GetLocationsNear(request *models.GetLocationsNearRequest) ([]*models.Location, error) {
-	return database.GetLocationsNear(request.Longitude, request.Latitude, request.MaxDistanceNear)
+func GetNearbyLocations(request *models.GetLocationsNearRequest) ([]models.Location, error) {
+	return database.GetNearbyLocations(request)
 }

@@ -10,7 +10,7 @@ import (
 )
 
 func InsertLocation(location *models.Location) error {
-	collection := client.Database("app").Collection("locations")
+	collection := client.Database("app").Collection("location")
 
 	_, err := collection.InsertOne(context.Background(), location)
 	if err != nil {
@@ -21,7 +21,7 @@ func InsertLocation(location *models.Location) error {
 }
 
 func UpdateLocationRating(id string, newRating float64) error {
-	collection := client.Database("app").Collection("locations")
+	collection := client.Database("app").Collection("location")
 
 	filter := bson.D{{"_id", id}}
 
@@ -44,7 +44,7 @@ func UpdateLocationRating(id string, newRating float64) error {
 }
 
 func GetLocation(id string) (*models.Location, error) {
-	collection := client.Database("app").Collection("locations")
+	collection := client.Database("app").Collection("location")
 
 	var model models.Location
 	if err := collection.FindOne(context.Background(), bson.D{{"_id", id}}).Decode(&model); err != nil {
@@ -58,8 +58,8 @@ func GetLocation(id string) (*models.Location, error) {
 	return &model, nil
 }
 
-func GetAllLocations() ([]*models.Location, error) {
-	collection := client.Database("app").Collection("locations")
+func GetAllLocations() ([]models.Location, error) {
+	collection := client.Database("app").Collection("location")
 
 	cursor, err := collection.Find(context.Background(), bson.D{})
 	if err != nil {
@@ -67,28 +67,38 @@ func GetAllLocations() ([]*models.Location, error) {
 	}
 	defer cursor.Close(context.Background())
 
-	var locations []*models.Location
+	locations := []models.Location{}
 
 	if err = cursor.All(context.Background(), &locations); err != nil {
 		return nil, err
 	}
-	return locations, nil
 
+	return locations, nil
 }
 
-func GetLocationsNear(lon, lat, maxDistMeters float64) ([]*models.Location, error) {
-	collection := client.Database("app").Collection("locations")
-	filter := bson.D{
-		{"location", bson.D{
-			{"$near", bson.D{
-				{"$geometry", bson.D{
-					{"type", "Point"},
-					{"coordinates", bson.A{lon, lat}},
-				}},
-				{"$maxDistance", maxDistMeters},
-			}},
+type nearSphere struct {
+	Geometry    models.GeoJSON `bson:"$geometry"`
+	MinDistance float32        `bson:"$minDistance"`
+	MaxDistance float32        `bson:"$maxDistance"`
+}
+
+func GetNearbyLocations(request *models.GetLocationsNearRequest) ([]models.Location, error) {
+	collection := client.Database("app").Collection("location")
+
+	filter := bson.D{{
+		Key: "location",
+		Value: bson.D{{
+			Key: "$nearSphere",
+			Value: nearSphere{
+				Geometry: models.GeoJSON{
+					Type:        "Point",
+					Coordinates: []float32{request.Longitude, request.Latitude},
+				},
+				MinDistance: 10,
+				MaxDistance: 1000,
+			},
 		}},
-	}
+	}}
 
 	cursor, err := collection.Find(context.Background(), filter)
 	if err != nil {
@@ -96,14 +106,9 @@ func GetLocationsNear(lon, lat, maxDistMeters float64) ([]*models.Location, erro
 	}
 	defer cursor.Close(context.Background())
 
-	var locations []*models.Location
-
+	locations := []models.Location{}
 	if err := cursor.All(context.Background(), &locations); err != nil {
 		return nil, err
-	}
-
-	if locations == nil {
-		locations = []*models.Location{}
 	}
 
 	return locations, nil
