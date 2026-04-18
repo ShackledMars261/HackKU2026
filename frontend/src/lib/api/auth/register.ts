@@ -3,8 +3,6 @@ import type { User } from '@/types';
 
 export async function register(body: RegisterRequest): Promise<User | void> {
 	try {
-		console.log(JSON.stringify(body));
-		console.log(`http://${process.env.BACKEND_URL}:8080/signup`);
 		const resp = await fetch(`http://${process.env.BACKEND_URL}:8080/signup`, {
 			method: 'POST',
 			headers: {
