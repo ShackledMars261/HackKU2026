@@ -1,9 +1,9 @@
 <svelte:head>
-    <title>Study Spot Finder</title>
+	<title>ZenQuest</title>
 </svelte:head>
 
-<div class="flex overflow-hidden grow">
-    <div class="">
-        <h1>title</h1>
-    </div>
+<div class="flex grow overflow-hidden">
+	<div class="">
+		<h1>ZenQuest</h1>
+	</div>
 </div>

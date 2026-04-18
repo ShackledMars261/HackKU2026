@@ -1,6 +1,5 @@
 <script lang="ts">
 	import '../app.css';
-	import { Spinner } from '$lib/components/ui/spinner/index';
 	import NavBar from '@/components/NavBar.svelte';
 	let { children } = $props();
 </script>
@@ -11,6 +10,5 @@
 	</div>
 	<div class="relative flex grow overflow-hidden">
 		{@render children()}
-		<Spinner />
 	</div>
 </main>
