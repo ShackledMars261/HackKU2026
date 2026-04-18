@@ -5,7 +5,7 @@ import type { User } from '$lib/types';
 export const load: Load = async ({ params, fetch }) => {
   const { slug } = params;
 
-  const res = await fetch(`${process.env.BACKEND_URL}/users/${slug}`);
+  const res = await fetch(`${process.env.BACKEND_URL}/user/${slug}`);
 
   if (res.status === 404) {
     error(404, 'User not found');
