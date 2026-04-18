@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-	<title>ZenQuest</title>
+	<title>SpotDrop</title>
 </svelte:head>
 
 {#if data.location}
