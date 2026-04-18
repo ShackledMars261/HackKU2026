@@ -1,11 +1,15 @@
 import { error } from '@sveltejs/kit';
-import type { Load } from '@sveltejs/kit';
 import type { Location } from '$lib/types';
+import type { PageServerLoad } from './$types';
 
-export const load: Load = async ({ params, fetch }) => {
+export const load: PageServerLoad = async ({ locals, params, fetch }) => {
   const { slug } = params;
 
-  const res = await fetch(`${process.env.BACKEND_URL}/location/${slug}`);
+  const res = await fetch(`${process.env.BACKEND_URL}/location/${slug}`, {
+    headers: {
+      Authorization: `Bearer ${locals.sessionToken}`
+    }
+  });
 
   if (res.status === 404) {
     error(404, 'Location not found');
