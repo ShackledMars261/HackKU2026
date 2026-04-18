@@ -1,4 +1,4 @@
-package handlers
+package routes
 
 import (
 	"encoding/json"
@@ -17,10 +17,10 @@ type createLocationRequest struct {
 }
 
 func LocationRouter(r chi.Router) {
-	r.Post("/", createLocation)
-	r.Get("/{id}", getLocation)
-	//r.Get("/", getAllLocations)
-	//r.Get("/search", searchLocations)
+	r.Post("/location", createLocation)
+	r.Get("/location/{id}", getLocation)
+	r.Get("/locations/all", getAllLocations)
+	//r.Get("/locations/search", searchLocations)
 }
 
 func createLocation(w http.ResponseWriter, r *http.Request) {
@@ -31,9 +31,11 @@ func createLocation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	new_location := &models.Location{
-		Longitude: request.Longitude,
-		Latitude:  request.Latitude,
-		Name:      request.Name,
+		Location: models.GeoJSON{
+			Type:        "Point",
+			Coordinates: []float64{request.Longitude, request.Latitude},
+		},
+		Name: request.Name,
 	}
 
 	created_location := database.CreateLocation(new_location)
@@ -56,4 +58,14 @@ func getLocation(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(location)
+}
+
+func getAllLocations(w http.ResponseWriter, r *http.Request) {
+	locations, err := database.GetAllLocations()
+	if err != nil {
+		http.Error(w, "Error getting locations", http.StatusInternalServerError)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(locations)
 }

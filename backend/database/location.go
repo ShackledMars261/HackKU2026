@@ -15,8 +15,7 @@ func CreateLocation(location *models.Location) *models.Location {
 
 	model := &models.Location{
 		ID:            uuid.NewString(),
-		Longitude:     location.Longitude,
-		Latitude:      location.Latitude,
+		Location:      location.Location,
 		Name:          location.Name,
 		OverallRating: 0.0,
 	}
@@ -41,6 +40,53 @@ func GetLocation(id string) (*models.Location, error) {
 	return &model, nil
 }
 
-func GetLocations() ([]*models.Location, error) {
-	return nil, nil
+func GetAllLocations() ([]*models.Location, error) {
+	collection := client.Database("app").Collection("locations")
+
+	cursor, err := collection.Find(context.Background(), bson.D{})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
+	var locations []*models.Location
+
+	if err = cursor.All(context.Background(), &locations); err != nil {
+		return nil, err
+	}
+	return locations, nil
+
+}
+
+func GetLocationsNear(lon, lat, maxDistMeters float64) ([]*models.Location, error) {
+	collection := client.Database("app").Collection("locations")
+	filter := bson.D{
+		{"location", bson.D{
+			{"$near", bson.D{
+				{"$geometry", bson.D{
+					{"type", "Point"},
+					{"coordinates", bson.A{lon, lat}},
+				}},
+				{"$maxDistance", maxDistMeters},
+			}},
+		}},
+	}
+
+	cursor, err := collection.Find(context.Background(), filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
+	var locations []*models.Location
+
+	if err := cursor.All(context.Background(), &locations); err != nil {
+		return nil, err
+	}
+
+	if locations == nil {
+		locations = []*models.Location{}
+	}
+
+	return locations, nil
 }
