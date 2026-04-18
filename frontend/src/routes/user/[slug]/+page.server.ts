@@ -5,7 +5,7 @@ import type { PageServerLoad } from './$types';
 export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 	const { slug } = params;
 
-	const res = await fetch(`http://${process.env.BACKEND_URL}/user/${slug}`, {
+	const res = await fetch(`http://${process.env.BACKEND_URL}:8080/user/${slug}`, {
 		headers: {
 			Authorization: `Bearer ${locals.sessionToken}`
 		}
