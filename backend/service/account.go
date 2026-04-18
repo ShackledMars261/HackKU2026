@@ -4,6 +4,7 @@ import (
 	"main/database"
 	"main/errors"
 	"main/models"
+	"time"
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -58,4 +59,18 @@ func Signin(request *models.SigninRequest) (*models.Session, error) {
 	}
 
 	return session, nil
+}
+
+func GetSessionStatus(id string) (*models.SessionStatusResponse, error) {
+	session, err := database.GetSession(id)
+	if err != nil {
+		return nil, err
+	}
+	status := models.SessionStatusResponse{
+		Exists:    true,
+		Expired:   time.Now().After(session.ExpiresAt),
+		ExpiresAt: &session.ExpiresAt,
+		UserID:    &session.UserID,
+	}
+	return &status, nil
 }

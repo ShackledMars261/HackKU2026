@@ -47,5 +47,12 @@ func signin(w http.ResponseWriter, r *http.Request) {
 }
 
 func session(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
 
+	resp, err := service.GetSessionStatus(id)
+	if err != nil {
+		writeError(w, err)
+	}
+
+	writeJSON(w, http.StatusOK, resp)
 }

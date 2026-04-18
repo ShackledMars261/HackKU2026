@@ -24,7 +24,7 @@ func NewSession(userId string) *Session {
 
 type SessionStatusResponse struct {
 	Exists    bool       `json:"exists"`
-	Expired   *bool      `json:"expired"`
+	Expired   bool       `json:"expired"`
 	ExpiresAt *time.Time `json:"expiresAt"`
 	UserID    *string    `json:"userId"`
 }
