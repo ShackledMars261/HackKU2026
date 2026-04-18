@@ -1,6 +1,8 @@
 package errors
 
-import "errors"
+import "net/http"
 
-var ErrUsernameAlreadyExists = errors.New("username already exists")
-var ErrInvalidUsernameOrPassword = errors.New("invalid username or password")
+var (
+	ErrUsernameAlreadyExists     = New("username_exists", "username already exists", http.StatusConflict)
+	ErrInvalidUsernameOrPassword = New("invalid_credentials", "invalid username or password", http.StatusUnauthorized)
+)
