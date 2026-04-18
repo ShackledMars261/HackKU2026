@@ -1,9 +1,12 @@
 <script lang="ts">
-	import './layout.css';
-	import favicon from '$lib/assets/favicon.svg';
-
-	let { children } = $props();
+  import '../app.css';
+  import { Spinner } from "$lib/components/ui/spinner/index";
+  let { children } = $props();
 </script>
 
-<svelte:head><link rel="icon" href={favicon} /></svelte:head>
-{@render children()}
+<main class="relative flex flex-col h-screen overflow-hidden">
+  <div class="relative flex overflow-hidden grow">
+    {@render children()}
+	<Spinner />
+  </div>
+</main>
