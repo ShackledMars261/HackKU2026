@@ -1,8 +1,11 @@
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog/index';
 	import { Button } from '$lib/components/ui/button/index';
+	import { Input } from '$lib/components/ui/input/index';
+	import { Label } from '$lib/components/ui/label/index';
 
 	let open = $state(false);
+	let locationId = $state('');
 	let file = $state<File | null>(null);
 	let loading = $state(false);
 	let error = $state<string | null>(null);
@@ -29,13 +32,17 @@
 			error = 'Please select a file.';
 			return;
 		}
+		if (!locationId.trim()) {
+			error = 'Please enter a location ID.';
+			return;
+		}
 
 		loading = true;
 		error = null;
 		success = false;
 
 		try {
-			const resp = await fetch('/api/asset', {
+			const resp = await fetch(`/api/asset/${locationId.trim()}`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/octet-stream',
@@ -48,6 +55,7 @@
 
 			success = true;
 			file = null;
+			locationId = '';
 		} catch (e: any) {
 			error = e.message;
 		} finally {
@@ -59,6 +67,7 @@
 		if (loading) return;
 		open = false;
 		file = null;
+		locationId = '';
 		error = null;
 		success = false;
 	}
@@ -81,7 +90,10 @@
 			<Dialog.Title>Upload Image</Dialog.Title>
 			<Dialog.Description>Select or drag and drop an image to upload.</Dialog.Description>
 		</Dialog.Header>
-
+		<div class="flex flex-col gap-1.5">
+			<Label for="location-id">Location ID</Label>
+			<Input id="location-id" placeholder="Enter location ID" bind:value={locationId} />
+		</div>
 		<div class="flex flex-col gap-4 py-2">
 			<!-- Drop zone -->
 			<label
