@@ -67,7 +67,7 @@
 			const m = L.marker([row.lat, row.lng], { icon })
 				.addTo(map)
 				.bindPopup(
-					`<strong style="color:var(--foreground)">${row.city}</strong><br><span style="color:var(--muted-foreground);font-size:11px">${row.lat.toFixed(4)}, ${row.lng.toFixed(4)}</span>`
+					`<strong style="color:var(--foreground)"><a href="/location/${row.id}" data-sveltekit-reload>${row.spot}</a></strong><br><span style="color:var(--muted-foreground);font-size:11px">${row.lat.toFixed(4)}, ${row.lng.toFixed(4)}</span>`
 				);
 			markers.push({ id: row.id, marker: m });
 		});
@@ -86,9 +86,9 @@
 
 		return locations.map((loc) => ({
 			id: loc.id,
-			city: loc.name,
-			lat: loc.location.coordinates[0], // GeoJSON is [lng, lat]
-			lng: loc.location.coordinates[1]
+			spot: loc.name,
+			lat: loc.location.coordinates[1], // GeoJSON is [lng, lat]
+			lng: loc.location.coordinates[0]
 		}));
 	}
 
@@ -157,7 +157,7 @@
 		<!-- Label + filter -->
 		<div class="flex flex-shrink-0 items-center justify-between px-10 pt-8 pb-4">
 			<span class="text-xs font-semibold tracking-widest text-muted-foreground uppercase"
-				>Cities</span
+				>Spots</span
 			>
 			<input
 				type="search"
@@ -175,7 +175,7 @@
 			<table class="w-full border-collapse text-[13px]">
 				<thead>
 					<tr>
-						{#each [['city', 'City'], ['lat', 'Lat'], ['lng', 'Lng']] as [col, label]}
+						{#each [['spot', 'Spot'], ['lat', 'Lat'], ['lng', 'Lng']] as [col, label]}
 							<th
 								onclick={() => setSort(col)}
 								class="cursor-pointer border-b border-border pb-2.5 text-left text-[11px] font-semibold tracking-wider uppercase transition-colors select-none
@@ -218,7 +218,7 @@
 								{#if selectedRow?.id === row.id}
 									<span class="absolute inset-y-0 -left-3 w-0.5 rounded-r bg-primary"></span>
 								{/if}
-								{row.city}
+								{row.spot}
 							</td>
 							<td class="py-3 pr-3 font-mono text-[12px] text-muted-foreground"
 								>{row.lat.toFixed(4)}</td
@@ -265,7 +265,7 @@
 		<!-- Label + filter -->
 		<div class="flex flex-shrink-0 items-center justify-between px-7 pt-5 pb-3">
 			<span class="text-[10px] font-semibold tracking-widest text-muted-foreground uppercase"
-				>Cities</span
+				>Spots</span
 			>
 			<input
 				type="search"
@@ -284,7 +284,7 @@
 			<table class="w-full border-collapse text-[12px]" style="min-width: max-content;">
 				<thead class="sticky top-0 bg-card/95 backdrop-blur-sm">
 					<tr>
-						{#each [['city', 'City'], ['lat', 'Lat'], ['lng', 'Lng']] as [col, label]}
+						{#each [['spot', 'Spot'], ['lat', 'Lat'], ['lng', 'Lng']] as [col, label]}
 							<th
 								onclick={() => setSort(col)}
 								class="cursor-pointer border-b border-border pr-8 pb-2 text-left text-[10px] font-semibold tracking-wider uppercase transition-colors select-none
@@ -321,7 +321,7 @@
 								{#if selectedRow?.id === row.id}
 									<span class="absolute inset-y-0 -left-2 w-0.5 rounded-r bg-primary"></span>
 								{/if}
-								{row.city}
+								{row.spot}
 							</td>
 							<td class="py-2.5 pr-8 font-mono text-[11px] whitespace-nowrap text-muted-foreground"
 								>{row.lat.toFixed(4)}</td
@@ -345,7 +345,7 @@
 		<!-- Pagination (mobile) -->
 		<div class="flex flex-shrink-0 items-center justify-between px-7 pt-2 pb-5">
 			<span class="text-[10px] text-muted-foreground">
-				{filtered.length} cities · {currentPage}/{totalPages}
+				{filtered.length} spots · {currentPage}/{totalPages}
 			</span>
 			<div class="flex gap-1">
 				{#each [['«', () => (currentPage = 1), currentPage === 1], ['‹', () => currentPage--, currentPage === 1], ['›', () => currentPage++, currentPage === totalPages], ['»', () => (currentPage = totalPages), currentPage === totalPages]] as [label, action, disabled]}

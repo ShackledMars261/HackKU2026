@@ -23,6 +23,9 @@ export async function getNearbyLocations(
 		}
 
 		const data: Location[] = await resp.json();
+		data.forEach((loc) => {
+			console.log(JSON.stringify(loc.location.coordinates));
+		});
 		return data;
 	} catch (error) {
 		console.error('Fetch error:', error);
