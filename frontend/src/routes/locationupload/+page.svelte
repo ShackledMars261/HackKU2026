@@ -2,8 +2,8 @@
 	import { enhance } from '$app/forms';
 	import Geolocation from 'svelte-geolocation';
 	let coords: [number, number] = $state([0, 0]);
-	let latitude: number = $derived(coords[0]);
-	let longitude: number = $derived(coords[1]);
+	let latitude: number = $derived(coords[1]);
+	let longitude: number = $derived(coords[0]);
 </script>
 
 <Geolocation getPosition bind:coords />

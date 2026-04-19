@@ -6,6 +6,9 @@ export async function getNearbyLocations(
 	body: GetNearbyLocationsRequest
 ): Promise<Location[] | void> {
 	try {
+		console.log(`http://${process.env.BACKEND_URL}:8080/location/nearby`);
+		console.log(JSON.stringify(body));
+		console.log(`Bearer ${token}`);
 		const resp = await fetch(`http://${process.env.BACKEND_URL}:8080/location/nearby`, {
 			method: 'POST',
 			headers: {
