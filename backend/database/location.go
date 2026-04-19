@@ -98,6 +98,10 @@ func GetNearbyLocations(request *models.GetLocationsNearRequest) ([]models.Nearb
 				{"maxDistance", request.Radius * 1609.34},
 			},
 		}},
+		{{
+			"$sort",
+			bson.D{{"distance", 1}}, // asc
+		}},
 	}
 
 	cursor, err := collection.Aggregate(context.Background(), aggregation)
