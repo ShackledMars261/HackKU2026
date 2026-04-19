@@ -18,10 +18,17 @@
 </script>
 
 <Dialog.Root>
-	<Dialog.Trigger class={cn(navigationMenuTriggerStyle(), "cursor-pointer")}>
-		Check In
+	<Dialog.Trigger>
+		{#snippet child({ props })}
+			<button
+				{...props}
+				class="inline-flex items-center justify-center gap-1 rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:outline-none"
+			>
+				Check In
+			</button>
+		{/snippet}
 	</Dialog.Trigger>
-	<Dialog.Content class="bborder-none text-white max-w-md rounded-3xl p-8">
+	<Dialog.Content class="bg-[#2D4336] border-none text-white max-w-md rounded-3xl p-8">
 		<Dialog.Header>
 			<Dialog.Title class="text-3xl font-bold text-center underline decoration-2 underline-offset-8 mb-8">
 				Check In
@@ -35,7 +42,7 @@
 					id="location"
 					placeholder="Enter Location"
 					bind:value={location}
-					class="text-[#2D4336] placeholder:text-[#2D4336]/60 border-none rounded-full h-12 text-lg px-6"
+					class="bg-[#D9D9D9] text-[#2D4336] placeholder:text-[#2D4336]/60 border-none rounded-full h-12 text-lg px-6"
 				/>
 			</div>
 
