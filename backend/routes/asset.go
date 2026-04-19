@@ -22,15 +22,15 @@ func createAsset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	filename := r.Header.Get("X-Filename")
-	if filename == "" {
+	fileName := r.Header.Get("X-FileName")
+	if fileName == "" {
 		writeError(w, errors.ErrMissingParam)
 		return
 	}
 
-	asset, err := service.UploadAsset(filename, r.Body)
+	asset, err := service.UploadAsset(fileName, r.Body)
 	if err != nil {
-		writeError(w, errors.ErrInternalServerError)
+		writeError(w, err)
 		return
 	}
 
@@ -61,7 +61,7 @@ func downloadAsset(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "image/jpeg")
+	w.Header().Set("Content-Type", "image/png")
 	err := service.DownloadAsset(id, w)
 	if err != nil {
 		writeError(w, err)
