@@ -10,3 +10,7 @@ type Asset struct {
 type AssetResponse struct {
 	Path string `json:"path"`
 }
+
+type AssetsResponse struct {
+	Paths []string `json:"paths"`
+}

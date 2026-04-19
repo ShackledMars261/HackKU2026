@@ -11,8 +11,9 @@ import (
 func AssetRouter(r chi.Router) {
 	r.Route("/asset", func(r chi.Router) {
 		r.With(RequireSession).Post("/{id}", createAsset) // id is location id
-		r.With(RequireSession).Get("/{id}", getAsset)
 		r.Get("/{id}", downloadAsset)
+
+		r.Get("/all/{id}", getAllAssets)
 	})
 }
 
@@ -57,6 +58,22 @@ func getAsset(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusOK, asset)
+}
+
+func getAllAssets(w http.ResponseWriter, r *http.Request) {
+	locationID := chi.URLParam(r, "id")
+	if locationID == "" {
+		writeError(w, errors.ErrMissingParam)
+		return
+	}
+
+	assets, err := service.GetAllAssets(locationID)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, assets)
 }
 
 func downloadAsset(w http.ResponseWriter, r *http.Request) {
