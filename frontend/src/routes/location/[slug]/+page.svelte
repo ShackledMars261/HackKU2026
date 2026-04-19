@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { Button } from '$lib/components/ui/button';
-	import type { Location, StatusResponse } from '$lib/types';
+	import type { AssetUrls, Location, StatusResponse } from '$lib/types';
 	import { onMount } from 'svelte';
 	import { safeFly } from '@/transitions.js';
 	import type { Post } from '$lib/types';
@@ -11,15 +11,15 @@
 	onMount(() => (ready = true));
 
 	type Props = {
-		data: { location: Location; posts: Post[]; status: StatusResponse };
+		data: { location: Location; posts: Post[]; status: StatusResponse; assetUrls: AssetUrls };
 	};
 
 	let { data }: Props = $props();
 	const loc: Location = $derived(data.location);
 	const posts: Post[] = $derived(data.posts);
 	const status: StatusResponse = $derived(data.status);
+	const assetUrls: AssetUrls = $derived(data.assetUrls);
 	let currentSlide = $state(0);
-	const totalSlides = 4;
 </script>
 
 {#if loc}
@@ -36,75 +36,88 @@
 				<div class="order-1 flex min-h-0 flex-col gap-2 sm:gap-3 md:col-span-5 md:gap-4">
 					<!-- Manual Carousel -->
 					<div class="relative min-h-0 flex-1 overflow-hidden rounded-xl bg-secondary">
-						<!-- Slide -->
-						<div class="flex h-full w-full items-center justify-center">
-							<svg
-								class="h-8 w-8 text-muted-foreground/40 sm:h-12 sm:w-12 md:h-16 md:w-16"
-								xmlns="http://www.w3.org/2000/svg"
-								fill="none"
-								viewBox="0 0 24 24"
-								stroke="currentColor"
-							>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="1"
-									d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+						{#if assetUrls?.paths?.length > 0}
+							<!-- Image slide -->
+							<div class="h-full w-full">
+								<img
+									src={`/api/media${assetUrls.paths[currentSlide]}`}
+									alt="Location photo {currentSlide + 1}"
+									class="h-full w-full object-cover"
 								/>
-							</svg>
-						</div>
+							</div>
 
-						<!-- Prev button -->
-						<button
-							onclick={() => (currentSlide = (currentSlide - 1 + totalSlides) % totalSlides)}
-							class="absolute top-1/2 left-2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground hover:bg-primary-foreground/20 sm:h-8 sm:w-8"
-						>
-							<svg
-								class="h-3 w-3 sm:h-4 sm:w-4"
-								fill="none"
-								viewBox="0 0 24 24"
-								stroke="currentColor"
+							<!-- Prev button -->
+							<button
+								onclick={() =>
+									(currentSlide =
+										(currentSlide - 1 + assetUrls.paths.length) % assetUrls.paths.length)}
+								class="absolute top-1/2 left-2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground hover:bg-primary-foreground/20 sm:h-8 sm:w-8"
 							>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M15 19l-7-7 7-7"
-								/>
-							</svg>
-						</button>
+								<svg
+									class="h-3 w-3 sm:h-4 sm:w-4"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke="currentColor"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M15 19l-7-7 7-7"
+									/>
+								</svg>
+							</button>
 
-						<!-- Next button -->
-						<button
-							onclick={() => (currentSlide = (currentSlide + 1) % totalSlides)}
-							class="absolute top-1/2 right-2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground hover:bg-primary-foreground/20 sm:h-8 sm:w-8"
-						>
-							<svg
-								class="h-3 w-3 sm:h-4 sm:w-4"
-								fill="none"
-								viewBox="0 0 24 24"
-								stroke="currentColor"
+							<!-- Next button -->
+							<button
+								onclick={() => (currentSlide = (currentSlide + 1) % assetUrls.paths.length)}
+								class="absolute top-1/2 right-2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground hover:bg-primary-foreground/20 sm:h-8 sm:w-8"
 							>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M9 5l7 7-7 7"
-								/>
-							</svg>
-						</button>
+								<svg
+									class="h-3 w-3 sm:h-4 sm:w-4"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke="currentColor"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M9 5l7 7-7 7"
+									/>
+								</svg>
+							</button>
 
-						<!-- Dots -->
-						<div class="absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-1.5">
-							{#each Array(totalSlides) as _, i}
-								<button
-									onclick={() => (currentSlide = i)}
-									class="h-1.5 w-1.5 rounded-full transition-colors {i === currentSlide
-										? 'bg-primary-foreground'
-										: 'bg-primary-foreground/30'}"
-								/>
-							{/each}
-						</div>
+							<!-- Dots -->
+							<div class="absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-1.5">
+								{#each assetUrls.paths as _, i}
+									<button
+										onclick={() => (currentSlide = i)}
+										class="h-1.5 w-1.5 rounded-full transition-colors {i === currentSlide
+											? 'bg-primary-foreground'
+											: 'bg-primary-foreground/30'}"
+									/>
+								{/each}
+							</div>
+						{:else}
+							<!-- Empty state -->
+							<div class="flex h-full w-full items-center justify-center">
+								<svg
+									class="h-8 w-8 text-muted-foreground/40 sm:h-12 sm:w-12 md:h-16 md:w-16"
+									xmlns="http://www.w3.org/2000/svg"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke="currentColor"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="1"
+										d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+									/>
+								</svg>
+							</div>
+						{/if}
 					</div>
 
 					<!-- Info -->
