@@ -9,7 +9,7 @@
 <Geolocation getPosition bind:coords />
 
 <form method="POST" action="?/submitLocation" use:enhance>
-	<input id="longitude" name="latitude" type="number" step="any" value={longitude} /><br />
+	<input id="longitude" name="longitude" type="number" step="any" value={longitude} /><br />
 	<input id="latitude" name="latitude" type="number" step="any" value={latitude} /><br />
 	<label for="name">Location name:</label>
 	<input id="name" name="name" type="text" /><br />
