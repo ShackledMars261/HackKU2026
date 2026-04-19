@@ -46,3 +46,7 @@ export type StatusReport = {
 	loudness: number;
 	createdAt: string;
 };
+
+export type AssetUrls = {
+	paths: string[];
+};
