@@ -2,15 +2,15 @@
 	import { enhance } from '$app/forms';
 	import Geolocation from 'svelte-geolocation';
 	let coords: [number, number] = $state([0, 0]);
-	let longitude: number = $derived(coords[0]);
 	let latitude: number = $derived(coords[1]);
+	let longitude: number = $derived(coords[0]);
 </script>
 
 <Geolocation getPosition bind:coords />
 
 <form method="POST" action="?/submitLocation" use:enhance>
-	<input id="longitude" name="longitude" type="number" step="any" value={longitude} /><br />
 	<input id="latitude" name="latitude" type="number" step="any" value={latitude} /><br />
+	<input id="longitude" name="longitude" type="number" step="any" value={longitude} /><br />
 	<label for="name">Location name:</label>
 	<input id="name" name="name" type="text" /><br />
 	<button type="submit">Submit</button><br />

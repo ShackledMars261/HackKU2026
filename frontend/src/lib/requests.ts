@@ -13,3 +13,15 @@ export interface CreateLocationRequest {
 	latitude: number;
 	name: string;
 }
+
+export interface GetNearbyLocationsRequest {
+	longitude: number;
+	latitude: number;
+	radius: number;
+}
+
+export interface CreateStatusReportRequest {
+	location_id: string;
+	busyness: number;
+	loudness: number;
+}

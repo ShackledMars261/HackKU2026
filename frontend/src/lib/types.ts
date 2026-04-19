@@ -31,3 +31,18 @@ export type Session = {
 	id: string;
 	userId: string;
 };
+
+export type StatusResponse = {
+	locationId: string;
+	averageBusyness: number;
+	averageLoudness: number;
+};
+
+export type StatusReport = {
+	id: string;
+	locationId: string;
+	userId: string;
+	busyness: number;
+	loudness: number;
+	createdAt: string;
+};
