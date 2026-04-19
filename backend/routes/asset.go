@@ -9,14 +9,20 @@ import (
 )
 
 func AssetRouter(r chi.Router) {
-	r.With(RequireSession).Route("/asset", func(r chi.Router) {
-		r.Post("/", createAsset)
-		r.Post("/{id}", getAsset)
+	r.Route("/asset", func(r chi.Router) {
+		r.With(RequireSession).Post("/{id}", createAsset) // id is location id
+		r.With(RequireSession).Get("/{id}", getAsset)
 		r.Get("/{id}", downloadAsset)
 	})
 }
 
 func createAsset(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		writeError(w, errors.ErrMissingParam)
+		return
+	}
+
 	if r.Header.Get("Content-Type") != "application/octet-stream" {
 		writeError(w, errors.ErrInvalidBody)
 		return
@@ -28,7 +34,7 @@ func createAsset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	asset, err := service.UploadAsset(fileName, r.Body)
+	asset, err := service.UploadAsset(id, fileName, r.Body)
 	if err != nil {
 		writeError(w, err)
 		return
