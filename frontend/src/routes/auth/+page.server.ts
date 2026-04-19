@@ -21,7 +21,7 @@ export const actions: Actions = {
 			console.log('error');
 		} else {
 			cookies.set('session', session.id, { path: '/' });
-			redirect(303, '/');
+			redirect(303, '/dashboard');
 		}
 	},
 	register: async ({ cookies, request }) => {
@@ -34,7 +34,7 @@ export const actions: Actions = {
 			console.log('error');
 		} else {
 			cookies.set('session', session.id, { path: '/' });
-			redirect(303, '/');
+			redirect(303, '/dashboard');
 		}
 	}
 } satisfies Actions;
