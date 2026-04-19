@@ -57,10 +57,10 @@ func GetPostsForLocation(locationId string) ([]*models.Post, error) {
 
 }
 
-func UploadPhotoToGridFS(filename string, file io.Reader) (string, error) {
+func UploadPhotoToGridFS(filename string, r io.Reader) (string, error) {
 	bucket := client.Database("app").GridFSBucket()
 
-	objectID, err := bucket.UploadFromStream(context.Background(), filename, file)
+	objectID, err := bucket.UploadFromStream(context.Background(), filename, r)
 	if err != nil {
 		return "", err
 	}
@@ -77,5 +77,6 @@ func StreamPhotoFromGridFS(fileID string, w io.Writer) error {
 	}
 
 	_, err = bucket.DownloadToStream(context.Background(), objectID, w)
+
 	return err
 }

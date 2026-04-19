@@ -22,7 +22,6 @@ func RoutePosts(r chi.Router) {
 }
 
 func createPost(w http.ResponseWriter, r *http.Request) {
-
 	session, ok := r.Context().Value("session").(*models.Session)
 	if !ok {
 		writeError(w, errors.ErrUnauthorized)
