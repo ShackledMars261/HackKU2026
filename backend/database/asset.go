@@ -12,8 +12,8 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
-func UploadAsset(fileName string, r io.Reader) (*models.Asset, error) {
-	bucket := client.Database("app").GridFSBucket(options.GridFSBucket().SetName("asset_fs"))
+func UploadAsset(locationID string, fileName string, r io.Reader) (*models.Asset, error) {
+	bucket := client.Database("app").GridFSBucket(options.GridFSBucket().SetName("asset"))
 	collection := client.Database("app").Collection("asset")
 
 	objectID, err := bucket.UploadFromStream(context.Background(), fileName, r)
@@ -22,9 +22,10 @@ func UploadAsset(fileName string, r io.Reader) (*models.Asset, error) {
 	}
 
 	asset := &models.Asset{
-		ID:       uuid.NewString(),
-		ObjectID: objectID.Hex(),
-		FileName: fileName,
+		ID:         uuid.NewString(),
+		LocationID: locationID,
+		ObjectID:   objectID.Hex(),
+		FileName:   fileName,
 	}
 	if _, err = collection.InsertOne(context.Background(), asset); err != nil {
 		return nil, err
@@ -54,7 +55,7 @@ func DownloadAsset(id string, w io.Writer) error {
 		return err
 	}
 
-	bucket := client.Database("app").GridFSBucket(options.GridFSBucket().SetName("asset_fs"))
+	bucket := client.Database("app").GridFSBucket(options.GridFSBucket().SetName("asset"))
 
 	objectID, err := bson.ObjectIDFromHex(asset.ObjectID)
 	if err != nil {

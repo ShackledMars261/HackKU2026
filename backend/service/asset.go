@@ -6,8 +6,8 @@ import (
 	"main/models"
 )
 
-func UploadAsset(fileName string, r io.Reader) (*models.AssetResponse, error) {
-	asset, err := database.UploadAsset(fileName, r)
+func UploadAsset(locationID string, fileName string, r io.Reader) (*models.AssetResponse, error) {
+	asset, err := database.UploadAsset(locationID, fileName, r)
 	if err != nil {
 		return nil, err
 	}
