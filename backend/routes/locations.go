@@ -11,11 +11,11 @@ import (
 func LocationRouter(r chi.Router) {
 	r.With(RequireSession).Route("/location", func(r chi.Router) {
 		r.Post("/", createLocation)
-		r.Get("/{id}", getLocation)
+		r.Post("/{id}", getLocation)
 	})
 
-	r.With(RequireSession).Get("/location/all", getAllLocations)
-	r.With(RequireSession).Get("/location/nearby", getNearbyLocations)
+	r.With(RequireSession).Post("/location/all", getAllLocations)
+	r.With(RequireSession).Post("/location/nearby", getNearbyLocations)
 }
 
 func createLocation(w http.ResponseWriter, r *http.Request) {
