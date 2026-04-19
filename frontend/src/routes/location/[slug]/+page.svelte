@@ -4,14 +4,21 @@
 	import type { Location } from '$lib/types';
 	import { onMount } from 'svelte';
 	import { safeFly } from '@/transitions.js';
+	import type { Post } from '$lib/types';
 
 	let ready = $state(false);
-	let { data } = $props();
-	const loc: Location = $derived(data.location);
-	let currentSlide = $state(0);
-	const totalSlides = 4;
 
 	onMount(() => (ready = true));
+
+	type Props = {
+		data: { location: Location; posts: Post[] };
+	};
+
+	let { data }: Props = $props();
+	const loc: Location = $derived(data.location);
+	const posts: Post[] = $derived(data.posts);
+	let currentSlide = $state(0);
+	const totalSlides = 4;
 </script>
 
 {#if loc}
@@ -134,20 +141,71 @@
 					class="order-2 flex min-h-0 flex-col gap-2 rounded-xl bg-card p-2 sm:gap-3 sm:p-3 md:col-span-7 md:gap-4 md:rounded-[2rem] md:p-6"
 				>
 					<div class="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden sm:gap-3 md:gap-4">
-						{#each Array(4) as _, i}
+						{#if posts === null || posts.length === 0}
 							<div
-								class="flex flex-1 items-center gap-2 rounded-xl bg-secondary p-2 sm:gap-3 sm:p-3 md:gap-4 md:p-4"
+								class="flex flex-1 flex-col items-center justify-center gap-2 text-muted-foreground"
 							>
-								<Skeleton
-									class="h-8 w-8 shrink-0 rounded-full bg-border sm:h-10 sm:w-10 md:h-16 md:w-16"
-								/>
-								<div class="flex w-full flex-col gap-1.5 sm:gap-2">
-									<Skeleton class="h-2.5 w-20 rounded bg-border sm:h-3 sm:w-24 md:h-4 md:w-36" />
-									<Skeleton class="h-3.5 w-full rounded bg-border sm:h-4 md:h-6 md:w-[90%]" />
-									<Skeleton class="h-2.5 w-3/4 rounded bg-border sm:h-3 md:h-4" />
-								</div>
+								<svg
+									class="h-8 w-8 opacity-40 sm:h-10 sm:w-10 md:h-14 md:w-14"
+									xmlns="http://www.w3.org/2000/svg"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke="currentColor"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="1.5"
+										d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-3 3-3-3z"
+									/>
+								</svg>
+								<p class="text-xs font-medium sm:text-sm md:text-base">No reviews yet</p>
+								<p class="text-xs opacity-60">Be the first to leave one!</p>
 							</div>
-						{/each}
+						{:else}
+							{#each posts as post (post.id)}
+								<div
+									class="flex flex-1 items-start gap-2 rounded-xl bg-secondary p-2 sm:gap-3 sm:p-3 md:gap-4 md:p-4"
+								>
+									<div
+										class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-border text-xs font-bold text-muted-foreground sm:h-10 sm:w-10 md:h-16 md:w-16 md:text-base"
+									>
+										{post.rating}
+									</div>
+
+									<div class="flex min-w-0 flex-1 flex-col gap-1 sm:gap-1.5">
+										<!-- Rating stars + date -->
+										<div class="flex items-center gap-2">
+											<div class="flex gap-0.5">
+												{#each Array(5) as _, i}
+													<svg
+														class="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 {i < post.rating
+															? 'text-yellow-400'
+															: 'text-border'}"
+														viewBox="0 0 20 20"
+														fill="currentColor"
+													>
+														<path
+															d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+														/>
+													</svg>
+												{/each}
+											</div>
+											<span class="text-[10px] text-muted-foreground sm:text-xs">
+												{new Date(post.createdAt).toLocaleDateString()}
+											</span>
+										</div>
+
+										<!-- Description -->
+										<p
+											class="line-clamp-3 text-xs text-secondary-foreground sm:text-sm md:text-base"
+										>
+											{post.description}
+										</p>
+									</div>
+								</div>
+							{/each}
+						{/if}
 					</div>
 
 					<div class="flex shrink-0 justify-end gap-2 md:gap-3">
