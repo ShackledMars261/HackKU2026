@@ -13,8 +13,8 @@ type Post struct {
 }
 
 type CreatePostRequest struct {
-	LocationId   string
-	Rating       float64
-	Description  string
-	PhotoFileIds []string
+	LocationId   string   `json:"location_id"`
+	Rating       float64  `json:"rating"`
+	Description  string   `json:"description"`
+	PhotoFileIds []string `json:"photo_file_ids"`
 }

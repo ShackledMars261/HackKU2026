@@ -17,6 +17,7 @@ func RoutePosts(r chi.Router) {
 		r.Post("/", createPost)
 		r.Get("/{id}", getPost)
 	})
+	r.With(RequireSession).Post("/posts/nopic", createPostNoPictures)
 	r.Get("/posts/{locationId}", getPostsByLocation)
 	r.Get("/photo/{photoId}", getPhoto)
 }
@@ -85,6 +86,23 @@ func createPost(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(created_post)
+}
+
+func createPostNoPictures(w http.ResponseWriter, r *http.Request) {
+	var request models.CreatePostRequest
+	if err := readBody(r, &request); err != nil {
+		writeError(w, err)
+		return
+	}
+
+	session, _ := r.Context().Value("session").(*models.Session)
+	post, err := service.CreatePost(session, &request)
+	if err != nil {
+		log.Printf("Error creating post: %v", err)
+		writeError(w, errors.ErrInternalServerError)
+	}
+
+	writeJSON(w, http.StatusOK, post)
 }
 
 func getPost(w http.ResponseWriter, r *http.Request) {
