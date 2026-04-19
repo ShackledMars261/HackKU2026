@@ -158,7 +158,7 @@
 	{#if ready}
 		<div
 			class="absolute top-1/2 right-6 z-10 hidden -translate-y-1/2 flex-col overflow-hidden border border-border bg-card/85 shadow-2xl backdrop-blur-md md:flex"
-			style="width: 30%; height: 75vh; border-radius: 94px;"
+			style="width: 30%; height: 75vh; border-radius: 24px;"
 			in:safeFly={{ x: -200, duration: 500 }}
 		>
 			<!-- Label + filter -->
