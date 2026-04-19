@@ -12,7 +12,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func RoutePosts(r chi.Router) {
+func PostRouter(r chi.Router) {
 	r.With(RequireSession).Route("/post", func(r chi.Router) {
 		r.Post("/", createPost)
 		r.Get("/{id}", getPost)
