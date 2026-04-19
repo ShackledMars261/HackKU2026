@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { Button } from '$lib/components/ui/button';
-	import type { Location } from '$lib/types';
+	import type { Location, StatusResponse } from '$lib/types';
 	import { onMount } from 'svelte';
 	import { safeFly } from '@/transitions.js';
 	import type { Post } from '$lib/types';
@@ -11,12 +11,13 @@
 	onMount(() => (ready = true));
 
 	type Props = {
-		data: { location: Location; posts: Post[] };
+		data: { location: Location; posts: Post[]; status: StatusResponse };
 	};
 
 	let { data }: Props = $props();
 	const loc: Location = $derived(data.location);
 	const posts: Post[] = $derived(data.posts);
+	const status: StatusResponse = $derived(data.status);
 	let currentSlide = $state(0);
 	const totalSlides = 4;
 </script>
@@ -129,10 +130,27 @@
 						</p>
 					</div>
 
-					<div class="shrink-0">
-						<Skeleton
-							class="h-4 w-full rounded-full bg-primary-foreground/20 sm:h-5 md:h-8 md:w-4/5"
-						/>
+					<div class="shrink-0 px-1">
+						<p class="mb-1 text-xs font-bold text-primary-foreground/90 sm:text-sm md:text-xl">
+							Busyness:
+							{#if status?.averageBusyness != null}
+								<span class="font-normal text-primary-foreground/75"
+									>{status.averageBusyness}/5</span
+								>
+							{:else}
+								<span class="font-normal text-primary-foreground/50 italic">No recent reports</span>
+							{/if}
+						</p>
+						{#if status?.averageBusyness != null}
+							<div
+								class="h-2 w-full overflow-hidden rounded-full bg-primary-foreground/20 sm:h-2.5 md:h-3"
+							>
+								<div
+									class="h-full rounded-full bg-primary-foreground/80 transition-all duration-500"
+									style="width: {(status.averageBusyness / 5) * 100}%"
+								></div>
+							</div>
+						{/if}
 					</div>
 				</div>
 
