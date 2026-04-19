@@ -37,3 +37,12 @@ export type StatusResponse = {
 	averageBusyness: number;
 	averageLoudness: number;
 };
+
+export type StatusReport = {
+	id: string;
+	locationId: string;
+	userId: string;
+	busyness: number;
+	loudness: number;
+	createdAt: string;
+};

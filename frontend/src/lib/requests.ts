@@ -19,3 +19,9 @@ export interface GetNearbyLocationsRequest {
 	latitude: number;
 	radius: number;
 }
+
+export interface CreateStatusReportRequest {
+	location_id: string;
+	busyness: number;
+	loudness: number;
+}

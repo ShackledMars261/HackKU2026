@@ -7,17 +7,29 @@
 
 	import { navigationMenuTriggerStyle } from '$lib/components/ui/navigation-menu/navigation-menu-trigger.svelte';
 	import { cn } from '$lib/utils';
+	import { createStatusReport } from '@/api/status/createStatusReport';
+
+	let open = $state(false);
 
 	let location = $state('');
 	let busyness = $state([0]);
 
-	function handleCheckIn() {
+	async function handleCheckIn() {
 		console.log('Checking in at:', location, 'with busyness:', busyness[0]);
-		// Add API call logic here if needed
+		const resp = await fetch('/api/status', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				location,
+				busyness: busyness[0]
+			})
+		});
+
+		open = false;
 	}
 </script>
 
-<Dialog.Root>
+<Dialog.Root bind:open>
 	<Dialog.Trigger>
 		{#snippet child({ props })}
 			<button
@@ -28,9 +40,11 @@
 			</button>
 		{/snippet}
 	</Dialog.Trigger>
-	<Dialog.Content class="bg-[#2D4336] border-none text-white max-w-md rounded-3xl p-8">
+	<Dialog.Content class="max-w-md rounded-3xl border-none bg-[#2D4336] p-8 text-white">
 		<Dialog.Header>
-			<Dialog.Title class="text-3xl font-bold text-center underline decoration-2 underline-offset-8 mb-8">
+			<Dialog.Title
+				class="mb-8 text-center text-3xl font-bold underline decoration-2 underline-offset-8"
+			>
 				Check In
 			</Dialog.Title>
 		</Dialog.Header>
@@ -42,7 +56,7 @@
 					id="location"
 					placeholder="Enter Location"
 					bind:value={location}
-					class="bg-[#D9D9D9] text-[#2D4336] placeholder:text-[#2D4336]/60 border-none rounded-full h-12 text-lg px-6"
+					class="h-12 rounded-full border-none bg-[#D9D9D9] px-6 text-lg text-[#2D4336] placeholder:text-[#2D4336]/60"
 				/>
 			</div>
 
@@ -53,9 +67,9 @@
 						bind:value={busyness}
 						max={5}
 						step={0.5}
-						class="w-full [&_[data-slot=slider-thumb]]:bg-[#C4D7B2] [&_[data-slot=slider-thumb]]:size-6 [&_[data-slot=slider-track]]:bg-[#D9D9D9] [&_[data-slot=slider-range]]:bg-[#C4D7B2]"
+						class="w-full [&_[data-slot=slider-range]]:bg-[#C4D7B2] [&_[data-slot=slider-thumb]]:size-6 [&_[data-slot=slider-thumb]]:bg-[#C4D7B2] [&_[data-slot=slider-track]]:bg-[#D9D9D9]"
 					/>
-					<div class="flex justify-between mt-4 px-1 text-lg font-bold items-center">
+					<div class="mt-4 flex items-center justify-between px-1 text-lg font-bold">
 						{#each [0, 1, 2, 3, 4, 5] as num}
 							<span>{num}</span>
 							{#if num !== 5}
@@ -69,7 +83,7 @@
 			<div class="flex justify-center pt-4">
 				<Button
 					onclick={handleCheckIn}
-					class="bg-[#D9D9D9] hover:bg-[#D9D9D9]/90 text-[#2D4336] font-bold rounded-2xl h-12 px-12 text-xl"
+					class="h-12 rounded-2xl bg-[#D9D9D9] px-12 text-xl font-bold text-[#2D4336] hover:bg-[#D9D9D9]/90"
 				>
 					Check In
 				</Button>
