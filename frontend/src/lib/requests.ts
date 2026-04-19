@@ -13,3 +13,9 @@ export interface CreateLocationRequest {
 	latitude: number;
 	name: string;
 }
+
+export interface GetNearbyLocationsRequest {
+	longitude: number;
+	latitude: number;
+	radius: number;
+}
