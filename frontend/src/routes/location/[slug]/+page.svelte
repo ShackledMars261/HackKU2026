@@ -5,6 +5,7 @@
 	import { onMount } from 'svelte';
 	import { safeFly } from '@/transitions.js';
 	import type { Post } from '$lib/types';
+	import CreateReviewDialog from '$lib/components/CreateReviewDialog.svelte';
 
 	let ready = $state(false);
 
@@ -246,11 +247,7 @@
 						>
 							View More
 						</Button>
-						<Button
-							class="h-8 rounded-full px-3 text-xs font-semibold sm:h-9 sm:px-4 sm:text-sm md:h-12 md:px-8 md:text-base"
-						>
-							Add Review
-						</Button>
+						<CreateReviewDialog locationId={loc.id} />
 					</div>
 				</div>
 			</div>

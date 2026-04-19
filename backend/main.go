@@ -24,6 +24,7 @@ func main() {
 	routes.SessionRouter(r)
 	routes.StatusReportRouter(r)
 	routes.AssetRouter(r)
+	routes.RoutePosts(r)
 
 	if err := http.ListenAndServe(":8080", r); err != nil {
 		log.Fatal(err)
