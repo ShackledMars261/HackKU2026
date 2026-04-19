@@ -30,10 +30,16 @@ export const handle: Handle = async ({ event, resolve }) => {
 	});
 
 	if (!res.ok) {
+		event.cookies.delete('session', { path: '/' });
 		redirect(303, '/auth');
 	}
 
-	const resp = await res.json();
+	const resp: { exists: boolean; expired: boolean; userId: string } = await res.json();
+
+	if (!resp.exists || resp.expired) {
+		event.cookies.delete('session', { path: '/' });
+		redirect(303, '/auth');
+	}
 
 	const userRes = await event.fetch(`http://${process.env.BACKEND_URL}:8080/user/${resp.userId}`, {
 		headers: {
