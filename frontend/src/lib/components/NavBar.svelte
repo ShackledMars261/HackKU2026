@@ -4,6 +4,7 @@
 	import { IsMobile } from '$lib/hooks/is-mobile.svelte';
 	import { resolve } from '$app/paths';
 	import logo from '$lib/assets/logo.svg';
+	import CheckIn from './CheckIn.svelte';
 
 	const isMobile = new IsMobile();
 
@@ -47,6 +48,11 @@
 					</NavigationMenu.Link>
 				</NavigationMenu.Item>
 			{/if}
+			
+			<NavigationMenu.Item>
+				<CheckIn />
+			</NavigationMenu.Item>
+
 			<NavigationMenu.Item>
 				<NavigationMenu.Link>
 					{#snippet child()}
