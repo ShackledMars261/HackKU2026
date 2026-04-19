@@ -78,35 +78,35 @@ func GetAllLocations() ([]models.Location, error) {
 
 type nearSphere struct {
 	Geometry    models.GeoJSON `bson:"$geometry"`
-	MinDistance float32        `bson:"$minDistance"`
-	MaxDistance float32        `bson:"$maxDistance"`
+	MinDistance float64        `bson:"$minDistance"`
+	MaxDistance float64        `bson:"$maxDistance"`
 }
 
-func GetNearbyLocations(request *models.GetLocationsNearRequest) ([]models.Location, error) {
+func GetNearbyLocations(request *models.GetLocationsNearRequest) ([]models.NearbyLocation, error) {
 	collection := client.Database("app").Collection("location")
 
-	filter := bson.D{{
-		Key: "location",
-		Value: bson.D{{
-			Key: "$nearSphere",
-			Value: nearSphere{
-				Geometry: models.GeoJSON{
+	aggregation := mongo.Pipeline{
+		{{
+			"$geoNear",
+			bson.D{
+				{"near", models.GeoJSON{
 					Type:        "Point",
-					Coordinates: []float32{request.Longitude, request.Latitude},
-				},
-				MinDistance: 0,
-				MaxDistance: request.Radius * 1609.34,
+					Coordinates: []float64{request.Longitude, request.Latitude},
+				}},
+				{"distanceField", "distance"},
+				{"distanceMultiplier", 0.00062137273},
+				{"maxDistance", request.Radius * 1609.34},
 			},
 		}},
-	}}
+	}
 
-	cursor, err := collection.Find(context.Background(), filter)
+	cursor, err := collection.Aggregate(context.Background(), aggregation)
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close(context.Background())
 
-	locations := []models.Location{}
+	locations := []models.NearbyLocation{}
 	if err := cursor.All(context.Background(), &locations); err != nil {
 		return nil, err
 	}

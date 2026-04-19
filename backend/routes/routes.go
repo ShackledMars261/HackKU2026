@@ -2,6 +2,7 @@ package routes
 
 import (
 	"encoding/json"
+	"log"
 	"main/errors"
 	"net/http"
 )
@@ -13,6 +14,8 @@ func writeJSON(w http.ResponseWriter, code int, data any) {
 }
 
 func writeError(w http.ResponseWriter, err error) {
+	log.Printf("%v", err)
+
 	if clientErr, ok := errors.AsType[*errors.ClientError](err); ok {
 		writeJSON(w, clientErr.Code, clientErr)
 		return
