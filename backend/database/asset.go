@@ -13,34 +13,24 @@ import (
 )
 
 func UploadAsset(fileName string, r io.Reader) (*models.Asset, error) {
-	session, err := client.StartSession()
+	bucket := client.Database("app").GridFSBucket(options.GridFSBucket().SetName("asset_fs"))
+	collection := client.Database("app").Collection("asset")
+
+	objectID, err := bucket.UploadFromStream(context.Background(), fileName, r)
 	if err != nil {
 		return nil, err
 	}
-	defer session.EndSession(context.Background())
 
-	bucket := client.Database("app").GridFSBucket(options.GridFSBucket().SetName("asset_fs"))
-	collection := client.Database("app").Collection("asset")
-	asset, err := session.WithTransaction(context.Background(), func(ctx context.Context) (any, error) {
-		objectID, err := bucket.UploadFromStream(ctx, fileName, r)
-		if err != nil {
-			return nil, err
-		}
-
-		asset := &models.Asset{
-			ID:       uuid.NewString(),
-			ObjectID: objectID.Hex(),
-			FileName: fileName,
-		}
-		_, err = collection.InsertOne(ctx, asset)
-
-		return asset, err
-	})
-
-	if asset != nil {
-		return asset.(*models.Asset), nil
+	asset := &models.Asset{
+		ID:       uuid.NewString(),
+		ObjectID: objectID.Hex(),
+		FileName: fileName,
 	}
-	return nil, err
+	if _, err = collection.InsertOne(context.Background(), asset); err != nil {
+		return nil, err
+	}
+
+	return asset, nil
 }
 
 func GetAsset(id string) (*models.Asset, error) {
