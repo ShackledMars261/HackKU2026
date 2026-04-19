@@ -49,6 +49,22 @@ func GetAsset(id string) (*models.Asset, error) {
 	return &asset, nil
 }
 
+func GetAllAssets(locationID string) ([]models.Asset, error) {
+	collection := client.Database("app").Collection("asset")
+
+	cursor, err := collection.Find(context.Background(), bson.D{{"locationID", locationID}})
+	if err != nil {
+		return nil, err
+	}
+
+	var assets []models.Asset
+	if err := cursor.All(context.Background(), &assets); err != nil {
+		return nil, err
+	}
+
+	return assets, nil
+}
+
 func DownloadAsset(id string, w io.Writer) error {
 	asset, err := GetAsset(id)
 	if err != nil {
