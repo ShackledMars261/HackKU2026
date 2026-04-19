@@ -4,19 +4,26 @@ export type User = {
 	password: string;
 };
 
+export type GeoJSON = {
+	type: string;
+	coordinates: number[];
+};
+
 export type Location = {
 	id: string;
-	latitude: number;
-	longitude: number;
+	location: GeoJSON;
+	owner: string;
 	name: string;
 	overallRating: number;
 };
 
 export type Post = {
+	id: string;
 	userId: string;
 	locationId: string;
 	rating: number;
 	description: string;
+	createdAt: string;
 	photoFileIds: string[];
 };
 

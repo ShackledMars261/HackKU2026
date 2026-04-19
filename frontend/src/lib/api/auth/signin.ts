@@ -3,7 +3,7 @@ import type { Session } from '@/types';
 
 export async function signIn(body: SignInRequest): Promise<Session | void> {
 	try {
-		const resp = await fetch(`${process.env.BACKEND_URL}/signin`, {
+		const resp = await fetch(`http://${process.env.BACKEND_URL}:8080/signin`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -15,8 +15,8 @@ export async function signIn(body: SignInRequest): Promise<Session | void> {
 			throw new Error(`Error: ${resp.status}`);
 		}
 
-        const data: Session = await resp.json();
-        return data;
+		const data: Session = await resp.json();
+		return data;
 	} catch (error) {
 		console.error('Fetch error:', error);
 	}

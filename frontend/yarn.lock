@@ -1723,6 +1723,11 @@ svelte-eslint-parser@^1.4.0:
     postcss-selector-parser "^7.0.0"
     semver "^7.7.2"
 
+svelte-geolocation@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/svelte-geolocation/-/svelte-geolocation-1.0.0.tgz#a0013e6b4e239c43c7b83d2e30e6ec645da2dc28"
+  integrity sha512-zGa5k4t1IPxnkZlFOq+KTmCbaBQ53t6kdJdHLVNp/JmopklYHtTlivVqmTe9PvWtJjf0alhA0VbAUwt8OzZOAA==
+
 svelte-toolbelt@^0.10.6:
   version "0.10.6"
   resolved "https://registry.yarnpkg.com/svelte-toolbelt/-/svelte-toolbelt-0.10.6.tgz#573e25a69cdef3c3eb2bb6762e6c63b4db2d3355"

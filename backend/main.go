@@ -22,6 +22,7 @@ func main() {
 	routes.LocationRouter(r)
 	routes.UserRouter(r)
 	routes.SessionRouter(r)
+	routes.StatusReportRouter(r)
 
 	if err := http.ListenAndServe(":8080", r); err != nil {
 		log.Fatal(err)
