@@ -1,24 +1,12 @@
-import { error } from '@sveltejs/kit';
-import type { Location } from '$lib/types';
 import type { PageServerLoad } from './$types';
+import { getLocation } from '@/api/location/getLocation';
 
-export const load: PageServerLoad = async ({ locals, params, fetch }) => {
+export const load: PageServerLoad = async ({ locals, params }) => {
 	const { slug } = params;
 
-	const res = await fetch(`http://${process.env.BACKEND_URL}:8080/location/${slug}`, {
-		headers: {
-			Authorization: `Bearer ${locals.sessionToken}`
-		}
-	});
+	const token: string = locals.sessionToken || '';
 
-	if (res.status === 404) {
-		error(404, 'Location not found');
-	}
+	const loc = await getLocation(token, slug);
 
-	if (!res.ok) {
-		error(500, 'Failed to fetch location');
-	}
-
-	const location: Location = await res.json();
-	return { location };
+	return { loc };
 };
