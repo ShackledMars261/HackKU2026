@@ -45,6 +45,10 @@
 	let selectedRow = $state(null);
 	let markers = [];
 
+	function formatDistance(distance) {
+		return `${distance.toFixed(1)} mi`;
+	}
+
 	function setSort(col) {
 		sorting =
 			sorting.column === col
@@ -54,7 +58,8 @@
 
 	function selectRow(row) {
 		selectedRow = row;
-		if (map) map.flyTo([row.lat, row.lng], 10, { duration: 1.2 });
+		if (map && row.lat != null && row.lng != null)
+			map.flyTo([row.lat, row.lng], 16, { duration: 1.2 });
 	}
 
 	function addMarkers(rows) {
@@ -63,17 +68,20 @@
 		markers = [];
 
 		rows.forEach((row) => {
+			if (row.lat == null || row.lng == null) return;
+
 			const icon = L.divIcon({
 				className: '',
-				html: `<div style="width:10px;height:10px;border-radius:50%;background:var(--primary);border:2px solid var(--background);box-shadow:0 1px 6px rgba(0,0,0,.3)"></div>`,
-				iconSize: [10, 10],
-				iconAnchor: [5, 5]
+				html: `<div style="width:20px;height:20px;border-radius:50%;background:var(--primary);border:2px solid var(--background);box-shadow:0 1px 6px rgba(0,0,0,.3)"></div>`,
+				iconSize: [20, 20],
+				iconAnchor: [10, 10]
 			});
 			const m = L.marker([row.lat, row.lng], { icon })
 				.addTo(map)
 				.bindPopup(
 					`<strong style="color:var(--foreground)"><a href="/location/${row.id}" data-sveltekit-reload>${row.spot}</a></strong><br><span style="color:var(--muted-foreground);font-size:11px">${row.lat.toFixed(4)}, ${row.lng.toFixed(4)}</span>`
-				);
+				)
+				.on('click', () => selectRow(row));
 			markers.push({ id: row.id, marker: m });
 		});
 	}
@@ -92,8 +100,10 @@
 		return locations.map((loc) => ({
 			id: loc.id,
 			spot: loc.name,
-			lat: loc.location.coordinates[1], // GeoJSON is [lng, lat]
-			lng: loc.location.coordinates[0]
+			distance: loc.distance,
+			rating: loc.overallRating,
+			lat: loc.lat ?? loc.location.coordinates[1],
+			lng: loc.lng ?? loc.location.coordinates[0]
 		}));
 	}
 
@@ -123,8 +133,8 @@
 			async (position) => {
 				const { latitude, longitude } = position.coords;
 				try {
-					tableData = await fetchNearbyLocations(latitude, longitude);
 					map.setView([latitude, longitude], 13);
+					tableData = await fetchNearbyLocations(latitude, longitude);
 					addMarkers(tableData);
 				} catch (e) {
 					locationError = 'Could not load nearby locations.';
@@ -182,10 +192,11 @@
 				<table class="w-full border-collapse text-[13px]">
 					<thead>
 						<tr>
-							{#each [['spot', 'Spot'], ['lat', 'Lat'], ['lng', 'Lng']] as [col, label]}
+							{#each [['spot', 'Spot'], ['distance', 'Distance'], ['rating', 'Rating']] as [col, label]}
 								<th
 									onclick={() => setSort(col)}
 									class="cursor-pointer border-b border-border pb-2.5 text-left text-[11px] font-semibold tracking-wider uppercase transition-colors select-none
+									{col === 'spot' ? 'w-3/5' : 'w-1/5'}
                   {sorting.column === col
 										? 'text-primary'
 										: 'text-muted-foreground hover:text-foreground'}"
@@ -221,18 +232,18 @@
 									if (selectedRow?.id !== row.id) e.currentTarget.style.background = '';
 								}}
 							>
-								<td class="relative py-3 pr-3 font-medium text-foreground">
+								<td class="relative w-3/5 py-3 pr-3 pl-1 font-medium text-foreground">
 									{#if selectedRow?.id === row.id}
 										<span class="absolute inset-y-0 -left-3 w-0.5 rounded-r bg-primary"></span>
 									{/if}
 									{row.spot}
 								</td>
-								<td class="py-3 pr-3 font-mono text-[12px] text-muted-foreground"
-									>{row.lat.toFixed(4)}</td
-								>
-								<td class="py-3 font-mono text-[12px] text-muted-foreground"
-									>{row.lng.toFixed(4)}</td
-								>
+								<td class="w-1/5 py-3 pr-3 font-mono text-[12px] text-muted-foreground">
+									{formatDistance(row.distance)}
+								</td>
+								<td class="w-1/5 py-3 font-mono text-[12px] text-muted-foreground">
+									{row.rating.toFixed(1)}
+								</td>
 							</tr>
 						{/each}
 						{#if pageRows.length === 0}
@@ -294,10 +305,11 @@
 			<table class="w-full border-collapse text-[12px]" style="min-width: max-content;">
 				<thead class="sticky top-0 bg-card/95 backdrop-blur-sm">
 					<tr>
-						{#each [['spot', 'Spot'], ['lat', 'Lat'], ['lng', 'Lng']] as [col, label]}
+						{#each [['spot', 'Spot'], ['distance', 'Distance'], ['rating', 'Rating']] as [col, label]}
 							<th
 								onclick={() => setSort(col)}
 								class="cursor-pointer border-b border-border pr-8 pb-2 text-left text-[10px] font-semibold tracking-wider uppercase transition-colors select-none
+								{col === 'spot' ? 'w-3/5' : 'w-1/5'}
                   {sorting.column === col
 									? 'text-primary'
 									: 'text-muted-foreground hover:text-foreground'}"
@@ -327,18 +339,22 @@
 								if (selectedRow?.id !== row.id) e.currentTarget.style.background = '';
 							}}
 						>
-							<td class="relative py-2.5 pr-8 font-medium whitespace-nowrap text-foreground">
+							<td class="relative w-3/5 py-2.5 pr-8 font-medium whitespace-nowrap text-foreground">
 								{#if selectedRow?.id === row.id}
 									<span class="absolute inset-y-0 -left-2 w-0.5 rounded-r bg-primary"></span>
 								{/if}
 								{row.spot}
 							</td>
-							<td class="py-2.5 pr-8 font-mono text-[11px] whitespace-nowrap text-muted-foreground"
-								>{row.lat.toFixed(4)}</td
+							<td
+								class="w-1/5 py-2.5 pr-8 font-mono text-[11px] whitespace-nowrap text-muted-foreground"
 							>
-							<td class="py-2.5 font-mono text-[11px] whitespace-nowrap text-muted-foreground"
-								>{row.lng.toFixed(4)}</td
+								{formatDistance(row.distance)}
+							</td>
+							<td
+								class="w-1/5 py-2.5 font-mono text-[11px] whitespace-nowrap text-muted-foreground"
 							>
+								{row.rating.toFixed(1)}
+							</td>
 						</tr>
 					{/each}
 					{#if pageRows.length === 0}
