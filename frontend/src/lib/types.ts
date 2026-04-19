@@ -17,6 +17,18 @@ export type Location = {
 	overallRating: number;
 };
 
+export type NearbyLocation = {
+	id: string;
+	lat: number;
+	lng: number;
+	owner: string;
+	name: string;
+	overallRating?: number;
+	rating: number;
+	distance: number;
+	location: GeoJSON;
+};
+
 export type Post = {
 	id: string;
 	userId: string;

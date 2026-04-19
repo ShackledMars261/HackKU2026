@@ -1,10 +1,10 @@
 import type { GetNearbyLocationsRequest } from '@/requests';
-import type { Location } from '@/types';
+import type { NearbyLocation } from '@/types';
 
 export async function getNearbyLocations(
 	token: string,
 	body: GetNearbyLocationsRequest
-): Promise<Location[] | void> {
+): Promise<NearbyLocation[] | void> {
 	try {
 		console.log(`http://${process.env.BACKEND_URL}:8080/location/nearby`);
 		console.log(JSON.stringify(body));
@@ -22,9 +22,9 @@ export async function getNearbyLocations(
 			throw new Error(`Error: ${resp.status}`);
 		}
 
-		const data: Location[] = await resp.json();
+		const data: NearbyLocation[] = await resp.json();
 		data.forEach((loc) => {
-			console.log(JSON.stringify(loc.location.coordinates));
+			console.log(JSON.stringify({ distance: loc.distance, rating: loc.rating }));
 		});
 		return data;
 	} catch (error) {
