@@ -28,7 +28,7 @@ func Initialize() {
 }
 
 func EnsureLocationIndexes() {
-	collection := client.Database("app").Collection("locations")
+	collection := client.Database("app").Collection("location")
 
 	indexModel := mongo.IndexModel{
 		Keys: bson.D{{"location", "2dsphere"}},
