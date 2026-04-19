@@ -94,8 +94,8 @@ func GetNearbyLocations(request *models.GetLocationsNearRequest) ([]models.Locat
 					Type:        "Point",
 					Coordinates: []float32{request.Longitude, request.Latitude},
 				},
-				MinDistance: 10,
-				MaxDistance: 1000,
+				MinDistance: 0,
+				MaxDistance: request.Radius * 1609.34,
 			},
 		}},
 	}}
