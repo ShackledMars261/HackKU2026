@@ -2,8 +2,6 @@ import type { RequestHandler } from './$types';
 import { getNearbyLocations } from '@/api/location/getNearbyLocations';
 import { json, error } from '@sveltejs/kit';
 
-const ONE_MILE_IN_METERS = 1609;
-
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const token = locals.sessionToken; // adjust to match your locals shape
 	const { latitude, longitude } = await request.json();
@@ -13,9 +11,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	const locations = await getNearbyLocations(token, {
-		latitude,
-		longitude,
-		radius: ONE_MILE_IN_METERS
+		latitude: latitude,
+		longitude: longitude,
+		radius: 1
 	});
 
 	return json(locations ?? []);
