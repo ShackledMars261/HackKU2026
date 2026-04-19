@@ -34,7 +34,7 @@
 			</p>
 
 			<div class="flex flex-col sm:flex-row gap-3 items-center">
-				<a href="#" class="bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium px-7 py-3.5 rounded-full transition-colors shadow-md">
+				<a href="/dashboard" class="bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium px-7 py-3.5 rounded-full transition-colors shadow-md">
 					Find a quiet spot
 				</a>
 				<a href="#about" class="text-muted-foreground hover:text-foreground text-sm font-medium px-5 py-3.5 transition-colors">
