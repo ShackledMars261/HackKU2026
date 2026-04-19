@@ -196,7 +196,7 @@
 								<th
 									onclick={() => setSort(col)}
 									class="cursor-pointer border-b border-border pb-2.5 text-left text-[11px] font-semibold tracking-wider uppercase transition-colors select-none
-									{col === 'spot' ? 'w-3/5' : 'w-1/5'}
+									{col === 'spot' ? 'w-3/5' : 'w-2/5'}
                   {sorting.column === col
 										? 'text-primary'
 										: 'text-muted-foreground hover:text-foreground'}"
