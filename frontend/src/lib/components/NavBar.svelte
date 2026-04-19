@@ -35,13 +35,32 @@
 				<NavigationMenu.Item>
 					<NavigationMenu.Link>
 						{#snippet child()}
-							<a href={resolve('/auth')} class={navigationMenuTriggerStyle()} aria-label="Login">
+							<a
+								href={resolve('/auth')}
+								class={navigationMenuTriggerStyle()}
+								aria-label="Login"
+								data-sveltekit-reload
+							>
 								Login
 							</a>
 						{/snippet}
 					</NavigationMenu.Link>
 				</NavigationMenu.Item>
 			{/if}
+			<NavigationMenu.Item>
+				<NavigationMenu.Link>
+					{#snippet child()}
+						<a
+							href={resolve('/dashboard')}
+							class={navigationMenuTriggerStyle()}
+							aria-label="Dashboard"
+							data-sveltekit-reload
+						>
+							Dashboard
+						</a>
+					{/snippet}
+				</NavigationMenu.Link>
+			</NavigationMenu.Item>
 		</NavigationMenu.List>
 	</NavigationMenu.Root>
 </div>

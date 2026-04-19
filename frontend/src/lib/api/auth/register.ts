@@ -3,7 +3,7 @@ import type { User } from '@/types';
 
 export async function register(body: RegisterRequest): Promise<User | void> {
 	try {
-		const resp = await fetch(`${process.env.BACKEND_URL}/signup`, {
+		const resp = await fetch(`http://${process.env.BACKEND_URL}:8080/signup`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
