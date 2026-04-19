@@ -1,5 +1,10 @@
 <script>
+	import { safeFly } from '@/transitions.js';
 	import { onMount, onDestroy } from 'svelte';
+
+	let ready = $state(false);
+
+	onMount(() => (ready = true));
 
 	let { data = {} } = $props();
 
@@ -150,111 +155,116 @@
 	<div bind:this={mapEl} class="absolute inset-0 z-0"></div>
 
 	<!-- ── DESKTOP: vertical pill on the right ── -->
-	<div
-		class="absolute top-1/2 right-6 z-10 hidden -translate-y-1/2 flex-col overflow-hidden border border-border bg-card/85 shadow-2xl backdrop-blur-md md:flex"
-		style="width: 30%; height: 75vh; border-radius: 94px;"
-	>
-		<!-- Label + filter -->
-		<div class="flex flex-shrink-0 items-center justify-between px-10 pt-8 pb-4">
-			<span class="text-xs font-semibold tracking-widest text-muted-foreground uppercase"
-				>Spots</span
-			>
-			<input
-				type="search"
-				placeholder="Filter…"
-				bind:value={filterText}
-				oninput={() => {
-					currentPage = 1;
-				}}
-				class="w-32 rounded-full border border-border bg-background/60 px-4 py-1.5 text-[12px] text-foreground transition outline-none placeholder:text-muted-foreground focus:ring-1 focus:ring-ring"
-			/>
-		</div>
+	{#if ready}
+		<div
+			class="absolute top-1/2 right-6 z-10 hidden -translate-y-1/2 flex-col overflow-hidden border border-border bg-card/85 shadow-2xl backdrop-blur-md md:flex"
+			style="width: 30%; height: 75vh; border-radius: 94px;"
+			in:safeFly={{ x: -200, duration: 500 }}
+		>
+			<!-- Label + filter -->
+			<div class="flex flex-shrink-0 items-center justify-between px-10 pt-8 pb-4">
+				<span class="text-xs font-semibold tracking-widest text-muted-foreground uppercase"
+					>Spots</span
+				>
+				<input
+					type="search"
+					placeholder="Filter…"
+					bind:value={filterText}
+					oninput={() => {
+						currentPage = 1;
+					}}
+					class="w-32 rounded-full border border-border bg-background/60 px-4 py-1.5 text-[12px] text-foreground transition outline-none placeholder:text-muted-foreground focus:ring-1 focus:ring-ring"
+				/>
+			</div>
 
-		<!-- Column headers -->
-		<div class="flex-shrink-0 px-10">
-			<table class="w-full border-collapse text-[13px]">
-				<thead>
-					<tr>
-						{#each [['spot', 'Spot'], ['lat', 'Lat'], ['lng', 'Lng']] as [col, label]}
-							<th
-								onclick={() => setSort(col)}
-								class="cursor-pointer border-b border-border pb-2.5 text-left text-[11px] font-semibold tracking-wider uppercase transition-colors select-none
+			<!-- Column headers -->
+			<div class="flex-shrink-0 px-10">
+				<table class="w-full border-collapse text-[13px]">
+					<thead>
+						<tr>
+							{#each [['spot', 'Spot'], ['lat', 'Lat'], ['lng', 'Lng']] as [col, label]}
+								<th
+									onclick={() => setSort(col)}
+									class="cursor-pointer border-b border-border pb-2.5 text-left text-[11px] font-semibold tracking-wider uppercase transition-colors select-none
                   {sorting.column === col
-									? 'text-primary'
-									: 'text-muted-foreground hover:text-foreground'}"
-							>
-								{label}
-								<span class="ml-0.5 text-[10px] opacity-60">
-									{sorting.column === col ? (sorting.direction === 'asc' ? '↑' : '↓') : '↕'}
-								</span>
-							</th>
-						{/each}
-					</tr>
-				</thead>
-			</table>
-		</div>
-
-		<!-- Scrollable rows -->
-		<div class="min-h-0 flex-1 overflow-y-auto px-10">
-			<table class="w-full border-collapse text-[13px]">
-				<tbody>
-					{#each pageRows as row (row.id)}
-						<tr
-							onclick={() => selectRow(row)}
-							class="cursor-pointer border-b border-border/50 transition-colors"
-							style={selectedRow?.id === row.id
-								? 'background: color-mix(in oklch, var(--accent) 20%, transparent);'
-								: ''}
-							onmouseenter={(e) => {
-								if (selectedRow?.id !== row.id)
-									e.currentTarget.style.background =
-										'color-mix(in oklch, var(--accent) 10%, transparent)';
-							}}
-							onmouseleave={(e) => {
-								if (selectedRow?.id !== row.id) e.currentTarget.style.background = '';
-							}}
-						>
-							<td class="relative py-3 pr-3 font-medium text-foreground">
-								{#if selectedRow?.id === row.id}
-									<span class="absolute inset-y-0 -left-3 w-0.5 rounded-r bg-primary"></span>
-								{/if}
-								{row.spot}
-							</td>
-							<td class="py-3 pr-3 font-mono text-[12px] text-muted-foreground"
-								>{row.lat.toFixed(4)}</td
-							>
-							<td class="py-3 font-mono text-[12px] text-muted-foreground">{row.lng.toFixed(4)}</td>
+										? 'text-primary'
+										: 'text-muted-foreground hover:text-foreground'}"
+								>
+									{label}
+									<span class="ml-0.5 text-[10px] opacity-60">
+										{sorting.column === col ? (sorting.direction === 'asc' ? '↑' : '↓') : '↕'}
+									</span>
+								</th>
+							{/each}
 						</tr>
-					{/each}
-					{#if pageRows.length === 0}
-						<tr
-							><td colspan="3" class="py-10 text-center text-[13px] text-muted-foreground"
-								>No results.</td
-							></tr
-						>
-					{/if}
-				</tbody>
-			</table>
-		</div>
+					</thead>
+				</table>
+			</div>
 
-		<!-- Pagination -->
-		<div class="flex flex-shrink-0 items-center justify-between px-10 pt-4 pb-8">
-			<span class="text-[11px] text-muted-foreground">
-				{filtered.length} row{filtered.length !== 1 ? 's' : ''} · {currentPage}/{totalPages}
-			</span>
-			<div class="flex gap-1">
-				{#each [['«', () => (currentPage = 1), currentPage === 1], ['‹', () => currentPage--, currentPage === 1], ['›', () => currentPage++, currentPage === totalPages], ['»', () => (currentPage = totalPages), currentPage === totalPages]] as [label, action, disabled]}
-					<button
-						onclick={action}
-						{disabled}
-						class="rounded-full border border-border bg-background/60 px-2.5 py-0.5 text-[12px] text-muted-foreground transition hover:enabled:bg-accent hover:enabled:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-30"
-					>
-						{label}
-					</button>
-				{/each}
+			<!-- Scrollable rows -->
+			<div class="min-h-0 flex-1 overflow-y-auto px-10">
+				<table class="w-full border-collapse text-[13px]">
+					<tbody>
+						{#each pageRows as row (row.id)}
+							<tr
+								onclick={() => selectRow(row)}
+								class="cursor-pointer border-b border-border/50 transition-colors"
+								style={selectedRow?.id === row.id
+									? 'background: color-mix(in oklch, var(--accent) 20%, transparent);'
+									: ''}
+								onmouseenter={(e) => {
+									if (selectedRow?.id !== row.id)
+										e.currentTarget.style.background =
+											'color-mix(in oklch, var(--accent) 10%, transparent)';
+								}}
+								onmouseleave={(e) => {
+									if (selectedRow?.id !== row.id) e.currentTarget.style.background = '';
+								}}
+							>
+								<td class="relative py-3 pr-3 font-medium text-foreground">
+									{#if selectedRow?.id === row.id}
+										<span class="absolute inset-y-0 -left-3 w-0.5 rounded-r bg-primary"></span>
+									{/if}
+									{row.spot}
+								</td>
+								<td class="py-3 pr-3 font-mono text-[12px] text-muted-foreground"
+									>{row.lat.toFixed(4)}</td
+								>
+								<td class="py-3 font-mono text-[12px] text-muted-foreground"
+									>{row.lng.toFixed(4)}</td
+								>
+							</tr>
+						{/each}
+						{#if pageRows.length === 0}
+							<tr
+								><td colspan="3" class="py-10 text-center text-[13px] text-muted-foreground"
+									>No results.</td
+								></tr
+							>
+						{/if}
+					</tbody>
+				</table>
+			</div>
+
+			<!-- Pagination -->
+			<div class="flex flex-shrink-0 items-center justify-between px-10 pt-4 pb-8">
+				<span class="text-[11px] text-muted-foreground">
+					{filtered.length} row{filtered.length !== 1 ? 's' : ''} · {currentPage}/{totalPages}
+				</span>
+				<div class="flex gap-1">
+					{#each [['«', () => (currentPage = 1), currentPage === 1], ['‹', () => currentPage--, currentPage === 1], ['›', () => currentPage++, currentPage === totalPages], ['»', () => (currentPage = totalPages), currentPage === totalPages]] as [label, action, disabled]}
+						<button
+							onclick={action}
+							{disabled}
+							class="rounded-full border border-border bg-background/60 px-2.5 py-0.5 text-[12px] text-muted-foreground transition hover:enabled:bg-accent hover:enabled:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-30"
+						>
+							{label}
+						</button>
+					{/each}
+				</div>
 			</div>
 		</div>
-	</div>
+	{/if}
 
 	<!-- ── MOBILE: horizontal pill along the bottom ── -->
 	<!-- FIX 3: increased height from 38vh → 48vh for better data visibility -->
