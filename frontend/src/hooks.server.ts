@@ -8,6 +8,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	if (event.cookies.get('session')) {
 		event.locals.isSignedIn = true;
+		event.locals.sessionToken = event.cookies.get('session') || '';
 	} else {
 		event.locals.isSignedIn = false;
 	}
